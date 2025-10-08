@@ -362,7 +362,6 @@ def create_navigation_question(simple_name: str) -> str:
         f"navigate to the {simple_name}",
         f"go to the {simple_name}",
         f"move to the {simple_name}",
-        f"drive to the {simple_name}",
         f"approach the {simple_name}"
     ]
     return random.choice(navigation_questions)
@@ -540,7 +539,8 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
         sample_counter += 1
         
         # POSITIVE SAMPLE (NO AMBIGUITY) ----------------------------CLEAR REFERENCE--------------------------------
-        if should_generate_positive:
+        # Only generate positive sample if there's exactly ONE object of this type
+        if should_generate_positive and count == 1:
             clear_question = create_navigation_question(simple_name)
             robot_response = f"I found the {simple_name}. {description}"
             
@@ -569,6 +569,8 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
             dataset.append(dialogue)
             positive_count += 1
             print(f"Generated positive sample {positive_count}: {clear_question}")
+        elif should_generate_positive and count > 1:
+            print(f"Skipped positive sample generation for {simple_name}: {count} objects found in scene")
         
         # NEGATIVE SAMPLES (AMBIGUITY) ----------------------------VARIOUS AMBIGUITY TYPES--------------------------------
         else:
