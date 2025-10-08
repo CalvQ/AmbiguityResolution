@@ -657,7 +657,7 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
             nonexistent_object_json = create_nonexistent_objects(object_name, environment_info, scene_id, object_id)
             alternative_object = nonexistent_object_json['alternative']
             reason = nonexistent_object_json['reason']
-            navigation_question = create_ambiguous_question(object_name, alternative_object, use_natural=generate_natural)
+            navigation_question = create_ambiguous_question(alternative_object, None, use_natural=generate_natural)
             
             env_info = cached_build_env_info(scene_id, scannet_path, scanrefer_data)
             
