@@ -332,6 +332,7 @@ def simplify_object_name(object_name: str) -> str:
     return object_name
 
 def get_natural_question_for_object(object_name: str, color: str = None) -> str:
+    # TODO: not good enough to generate natural questions
     SYSTEM_PROMPT = """
 You are generating natural, human-like questions that people would ask when they need to interact with or find an object.
 The questions should:
@@ -478,7 +479,7 @@ def alternate_color_description(color_description: str) -> str:
     return color_description
 
 def get_ground_truth_color(description: str) -> str:
-    # TODO: use OpenAI API to get the ground truth color
+    # TODO
     for color in COLOR_OBJECTS:
         if color in description:
             return color
@@ -520,7 +521,6 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
     print("Loading ScanRefer data...")
     scanrefer_data = load_scanrefer_data(scanrefer_path)
     
-    # 如果output_path已存在，将其作为existing_dataset_path
     if existing_dataset_path is None and os.path.exists(output_path):
         existing_dataset_path = output_path
         print(f"Output file {output_path} already exists, will use it to skip processed scenes")
