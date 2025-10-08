@@ -9,6 +9,8 @@ from typing import Dict, List, Tuple, Set
 import functools
 import openai
 
+os.environ['OPENAI_API_KEY'] = 'YOUR_OPENAI_API_KEY'
+
 client = openai.OpenAI(
     api_key='YOUR_OPENAI_API_KEY',
     base_url="https://ai-gateway.andrew.cmu.edu/"
@@ -41,19 +43,6 @@ COLOR_SIMILARITY_GROUPS = {
 _scene_env_cache = {}
 
 _gpt_logs = []
-
-def log_gpt_interaction(system_prompt: str, user_prompt: str, response: str, scene_id: str = None, object_id: str = None):
-    global _gpt_logs
-    
-    log_entry = {
-        "scene_id": scene_id,
-        "object_id": object_id,
-        "system_prompt": system_prompt,
-        "user_prompt": user_prompt,
-        "gpt_response": response
-    }
-    
-    _gpt_logs.append(log_entry)
 
 def save_gpt_logs(filename: str = "gpt_interaction_logs.json"):
     global _gpt_logs
@@ -342,31 +331,77 @@ def simplify_object_name(object_name: str) -> str:
         return object_name[:-1]
     return object_name
 
-def create_ambiguous_question(simple_name: str, color: str = None) -> str:
-    # create simple ambiguity question
-    ambiguous_questions = [
-            f"find the",
-            f"where is the",
-            f"locate the",
-            f"point to the"
-        ]
-    temp = random.choice(ambiguous_questions)
+def get_natural_question_for_object(object_name: str, color: str = None) -> str:
+    SYSTEM_PROMPT = """
+You are generating natural, human-like questions that people would ask when they need to interact with or find an object.
+The questions should:
+1. Be based on the object's FUNCTION or USE CASE, not just its name
+2. Sound natural and conversational, like real human speech
+3. Be short and simple (under 15 words)
+4. Avoid robotic phrases like "navigate to", "locate", "point to"
+5. Express a human need, desire, or situation that requires the object
+6. When a color is specified, integrate it naturally into the question (e.g., "I need the red one" or "pass me that blue thing")
+
+Examples WITHOUT color:
+- soap dispenser → "I want to wash my hands" / "My hands are dirty, pass me that thing"
+- chair → "I'm tired, I need to sit down" / "Guide me to have a seat"
+- lamp → "It's too dark here" / "Can you turn on the light?"
+- trash can → "Where should I throw this?" / "I need to dispose of this"
+- microwave → "I want to heat this up" / "This food is cold"
+- bed → "I'm exhausted, I need to lie down" / "Guide me to have a rest"
+- refrigerator → "I'm thirsty" / "Where's something cold to drink?"
+- window → "I need fresh air" / "Can you open the window?"
+
+Examples WITH color:
+- blue chair → "I'm tired, can I sit on the blue one?" / "I need to sit on that blue seat"
+- red lamp → "It's dark, turn on the red light" / "Can you switch on the red one?"
+- green bottle → "I'm thirsty, pass me the green one" / "Where's that green bottle?"
+- white towel → "I need to dry my hands, give me the white one" / "Can I have that white towel?"
+
+Generate ONE natural question for the given object. Only output the question, nothing else.
+"""
+    
     if color:
-        return f"{temp} {color} {simple_name}"
+        USER_PROMPT = f"Object: {color} {object_name}\nGenerate a natural human question for this colored object."
     else:
-        return f"{temp} {simple_name}"
+        USER_PROMPT = f"Object: {object_name}\nGenerate a natural human question for this object."
+    
+    answer = get_response(USER_PROMPT, system_prompt=SYSTEM_PROMPT)
+    question = answer.strip().strip('"').strip("'")
+    return question
 
-def create_navigation_question(simple_name: str) -> str:
-    # create navigation ambiguity question
-    navigation_questions = [
-        f"navigate to the {simple_name}",
-        f"go to the {simple_name}",
-        f"move to the {simple_name}",
-        f"approach the {simple_name}"
-    ]
-    return random.choice(navigation_questions)
+def create_ambiguous_question(simple_name: str, 
+                                color: str = None, 
+                                use_natural: bool = True) -> str:
+    if use_natural:
+        return get_natural_question_for_object(simple_name, color)
+    else:
+        ambiguous_questions = [
+                f"find the",
+                f"where is the",
+                f"locate the",
+                f"go to the"
+            ]
+        temp = random.choice(ambiguous_questions)
+        if color:
+            return f"{temp} {color} {simple_name}"
+        else:
+            return f"{temp} {simple_name}"
 
-def get_response(prompt, model="gpt-4.1-mini", system_prompt=None, scene_id=None, object_id=None):
+def create_navigation_question(simple_name: str, 
+                                use_natural: bool = True) -> str:
+    if use_natural:
+        return get_natural_question_for_object(simple_name, None)
+    else:
+        navigation_questions = [
+            f"navigate to the {simple_name}",
+            f"go to the {simple_name}",
+            f"move to the {simple_name}",
+            f"approach the {simple_name}"
+        ]
+        return random.choice(navigation_questions)
+
+def get_response(prompt, model="gpt-4.1-mini", system_prompt=None):
     response = client.chat.completions.create(
             model= model,
             messages = [
@@ -379,55 +414,50 @@ def get_response(prompt, model="gpt-4.1-mini", system_prompt=None, scene_id=None
     )
     answer = response.choices[0].message.content
     
-    log_gpt_interaction(system_prompt or "", prompt, answer, scene_id, object_id)
-    
     return answer
 
 
 def create_nonexistent_objects(object_name: str, environment_info:str, scene_id: str = None, object_id: str = None):
     SYSTEM_PROMPT = """
 You will be given an object name and environment info. 
-Your task is to generate ONE AMBIGUOUS question, and the reason of ambiguity. 
+Your task is to generate ONE AMBIGUOUS ALTERNATIVE OBJECT, and the reason of ambiguity. 
 Follow the rules below:
-1. The question must ask about a fake object that is SEMANTICALLY SIMILAR to the given object 
+1. The alternative object must be SEMANTICALLY SIMILAR to the given object 
    (e.g., same category, functional substitute, or common synonym),
    but not the same attributes, and actually not in the same scene.
-2. The question should be natural, human-like and as easy as "Where is ...", "Can you find ...", etc.
-3. The question must NOT contain any adverbial phrases (e.g., location, time, manner). 
-   It should be a simple, standalone sentence without additional descriptive phrases.
-4. Do NOT generate trivial synonyms that do not create real confusion. For example, if the object is "table", then asking "Where is the desk?" is invalid, 
+2. Do NOT generate trivial synonyms that do not create real confusion. For example, if the object is "table", then asking "desk" is invalid, 
    because it does not create genuine ambiguity. 
    Only generate objects that people could realistically confuse with the given object. 
-5. Generate ambiguous question asking about the object that DO NOT EXIST in the environment. 
+3. Generate ambiguous alternative object that DO NOT EXIST in the environment. 
    DO NOT replace the object with one other object that is ALREAY IN the environment. 
 
 Examples:
 Negative Examples (invalid, not ambiguous):
-- Object: table → Question: "Where is the desk?"  
+- Object: table → Alternative: "desk"  
   Reason: Desk and table are distinct enough that they do not create confusion in this context. 
 
 Positive Examples (valid ambiguous questions):
-- Object: chair → Question: "Where is the stool?"  
+- Object: chair → Alternative: "stool"  
   Reason: A stool is a type of seat like a chair, so it can be confused as a chair.  
-- Object: sofa → Question: "Where is the divan?"  
+- Object: sofa → Alternative: "divan"  
   Reason: Divan is a type of sofa, so it can be confused as a sofa.
-- Object: sofa → Question: "Where is the chaise longue?"  
+- Object: sofa → Alternative: "chaise longue"  
   Reason: Chaise longue is a type of sofa, so it can be confused as a sofa.
-- Object: mug → Question: "Where is the cup?"  
+- Object: mug → Alternative: "cup"  
   Reason: Cup is functionally similar to mug, so the two can be mixed up.  
-- Object: table → Question: "Where is the workbench?"
+- Object: table → Alternative: "workbench"
   Reason: Workbench is a type of table, so it can be confused as a table.
 
 Strictly follow the output format:
-Question: <question>
+Alternative: <alternative>
 Reason: <reason>
     """
     USER_PROMPT = f"Object: {object_name}, Environment info: {environment_info}"
-    answer = get_response(USER_PROMPT, system_prompt=SYSTEM_PROMPT, scene_id=scene_id, object_id=object_id)
+    answer = get_response(USER_PROMPT, system_prompt=SYSTEM_PROMPT)
     
-    question = answer.split('Question: ')[1].split('Reason: ')[0].strip()
-    print('-'*10 + 'QUESTION' + '-'*10)
-    print(question)
+    alternative = answer.split('Alternative: ')[1].split('Reason: ')[0].strip()
+    print('-'*10 + 'Alternative' + '-'*10)
+    print(alternative)
     print('-'*10)
     try:
         reason = answer.split('Reason: ')[1].strip()
@@ -437,7 +467,7 @@ Reason: <reason>
     print(reason)
     print('-'*10)
     return {
-        'question': question,
+        'alternative': alternative,
         'reason': reason
     }
    
@@ -541,7 +571,7 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
         # POSITIVE SAMPLE (NO AMBIGUITY) ----------------------------CLEAR REFERENCE--------------------------------
         # Only generate positive sample if there's exactly ONE object of this type
         if should_generate_positive and count == 1:
-            clear_question = create_navigation_question(simple_name)
+            clear_question = create_navigation_question(simple_name, use_natural=True)
             robot_response = f"I found the {simple_name}. {description}"
             
             env_info = cached_build_env_info(scene_id, scannet_path, scanrefer_data)
@@ -577,7 +607,7 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
             # MULTIPLE OBJECTS ----------------------------REFERENTIAL AMBIGUITY--------------------------------
             if count > 1:  # there is ambiguity
                 # create ambiguity dialogue
-                ambiguous_question = create_ambiguous_question(simple_name)
+                ambiguous_question = create_ambiguous_question(simple_name, None, use_natural=True)
                 robot_response = f"There are multiple {simple_name}s, which {simple_name} are you referring to?"
                 
                 # clean description, strip, replace two consecutive spaces with one space
@@ -617,10 +647,9 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
             # NONEXISTENT OBJECTS ----------------------------MISSING OBJECT AMBIGUITY--------------------------------
             environment_info = get_scanrefer_environment_info(scene_id, scanrefer_data)
             nonexistent_object_json = create_nonexistent_objects(simple_name, environment_info, scene_id, object_id)
-            navigation_question = nonexistent_object_json['question']
-            # Create navigation question for the nonexistent object
-            robot_response = f"I don't see this object in this environment. Could you please specify a different location?"
-            user_clarification = f"Sorry, I meant the {object_name}"
+            alternative_object = nonexistent_object_json['alternative']
+            reason = nonexistent_object_json['reason']
+            navigation_question = create_ambiguous_question(simple_name, alternative_object, use_natural=True)
             
             env_info = cached_build_env_info(scene_id, scannet_path, scanrefer_data)
             
@@ -632,19 +661,13 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
                 "environment_info": env_info,
                 "sample_type": "negative",
                 "ambiguity_type": "nonexistent_object",
+                "alternative_object": alternative_object,
+                "reason": reason,
                 "dialogue": [
                     {
                         "speaker": "User",
                         "text": navigation_question
                     },
-                    {
-                        "speaker": "Robot", 
-                        "text": robot_response
-                    },
-                    {
-                        "speaker": "User",
-                        "text": user_clarification
-                    }
                 ]
             }
             
@@ -657,7 +680,7 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
             if any(color in description for color in COLOR_OBJECTS):
                 scene_color_object_combinations = get_scene_object_color_combinations(scene_id, scanrefer_data)
                 alternative_color = get_similar_color_safe(ground_truth_color, object_name, scene_color_object_combinations)
-                alternative_question = create_ambiguous_question(simple_name, alternative_color)
+                alternative_question = create_ambiguous_question(simple_name, alternative_color, use_natural=True)
                 env_info = cached_build_env_info(scene_id, scannet_path, scanrefer_data)
                 dialogue = {
                     "scene_id": scene_id,
@@ -690,34 +713,30 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
     print(f"Negative ratio: {negative_count/(positive_count+negative_count)*100:.1f}%")
     print(f"Cache statistics: {len(_scene_env_cache)} scenes cached")
     
-    if os.path.exists(output_path):
-        print(f"Appending {len(dataset)} new samples to existing dataset at {output_path}")
-        try:
-            with open(output_path, 'r', encoding='utf-8') as f:
-                existing_data = json.load(f)
-            
-            combined_data = existing_data + dataset
+    output_dir = os.path.dirname(output_path)
+    os.makedirs(output_dir, exist_ok=True)    
 
-            with open(output_path, 'w', encoding='utf-8') as f:
-                json.dump(combined_data, f, ensure_ascii=False, indent=2)
-            
-            print(f"Combined dataset saved to: {output_path} (total samples: {len(combined_data)})")
-        except Exception as e:
-            print(f"Error merging datasets: {e}")
-            print(f"Saving new samples to: {output_path}")
-            with open(output_path, 'w', encoding='utf-8') as f:
-                json.dump(dataset, f, ensure_ascii=False, indent=2)
-    else:
-        print(f"Creating new dataset at: {output_path}")
+    try:
+        with open(output_path, 'r', encoding='utf-8') as f:
+            existing_data = json.load(f)
+        
+        combined_data = existing_data + dataset
+
+        with open(output_path, 'w', encoding='utf-8') as f:
+            json.dump(combined_data, f, ensure_ascii=False, indent=2)
+        
+        print(f"Combined dataset saved to: {output_path} (total samples: {len(combined_data)})")
+    except Exception as e:
+        print(f"Error merging datasets: {e}")
+        print(f"Saving new samples to: {output_path}")
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(dataset, f, ensure_ascii=False, indent=2)
-    
-    save_gpt_logs(output_path.replace(".json", "_gpt_interaction_logs.json"))
+
 
 def main():
     scanrefer_path = "/Users/yaqi/cmu/course/cap-planning/scanrefer/ScanRefer_filtered_train.json"
     scannet_path = "/Users/yaqi/cmu/course/cap-planning/scannet"
-    output_path = "/Users/yaqi/cmu/course/cap-planning/ambiguity_dataset/scanrefer_based-new/ambiguity_dataset_balanced_train.json"
+    output_path = "/Users/yaqi/cmu/course/cap-planning/ambiguity_dataset/natural/ambiguity_dataset_temp.json"
 
     if not os.path.exists(scanrefer_path):
         print(f"ScanRefer file does not exist: {scanrefer_path}")
