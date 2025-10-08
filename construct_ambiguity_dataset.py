@@ -8,6 +8,7 @@ import numpy as np
 from typing import Dict, List, Tuple, Set
 import functools
 import openai
+from tqdm import tqdm
 
 os.environ['OPENAI_API_KEY'] = 'YOUR_OPENAI_API_KEY'
 
@@ -57,10 +58,10 @@ def cached_build_env_info(scene_id: str, scannet_path: str, scanrefer_data: List
     cache_key = f"{scene_id}"
     
     if cache_key in _scene_env_cache:
-        print(f"Using cached environment info for scene {scene_id}")
+        # print(f"Using cached environment info for scene {scene_id}")
         return _scene_env_cache[cache_key]
     
-    print(f"Building and caching environment info for scene {scene_id}")
+    # print(f"Building and caching environment info for scene {scene_id}")
     env_info = build_env_info(scene_id, scannet_path, scanrefer_data)
     _scene_env_cache[cache_key] = env_info
     
@@ -69,7 +70,7 @@ def cached_build_env_info(scene_id: str, scannet_path: str, scanrefer_data: List
 def clear_env_cache():
     global _scene_env_cache
     _scene_env_cache.clear()
-    print("Environment cache cleared")
+    # print("Environment cache cleared")
 
 def get_scene_object_color_combinations(scene_id: str, scanrefer_data: list) -> set:
     scene_color_object_combinations = set()
@@ -188,19 +189,19 @@ def build_env_info(scene_id: str, scannet_path: str, scanrefer_data: List[Dict] 
     if not aggregation_data:
         return f"No aggregation data found for scene {scene_id}"
     
-    print(f"Loading PLY file for scene {scene_id}...")
+    # print(f"Loading PLY file for scene {scene_id}...")
     ply_path = os.path.join(scannet_path, 'scans', scene_id, f'{scene_id}_vh_clean_2.ply')
     vertices = read_mesh_vertices_rgb(ply_path)
     if vertices is None:
         return f"Failed to load PLY file for scene {scene_id}"
     
-    print(f"Loading segments data for scene {scene_id}...")
+    # print(f"Loading segments data for scene {scene_id}...")
     segments_data = read_segments_data(scene_id, scannet_path)
     if not segments_data or 'segIndices' not in segments_data:
         return f"No segments data found for scene {scene_id}"
     
     segments = segments_data['segIndices']
-    print(f"Found {len(segments)} segments, processing all objects...")
+    # print(f"Found {len(segments)} segments, processing all objects...")
     
     all_objects = []
     matching_objects = []
@@ -211,7 +212,7 @@ def build_env_info(scene_id: str, scannet_path: str, scanrefer_data: List[Dict] 
             object_id = seg_group.get('objectId')
             object_segments = seg_group.get('segments', [])
             
-            print(f"Calculating properties for {label} object {object_id} with {len(object_segments)} segments...")
+            # print(f"Calculating properties for {label} object {object_id} with {len(object_segments)} segments...")
             properties = calculate_object_properties(vertices, segments, object_segments)
             if properties:
                 obj_info = {
@@ -222,7 +223,7 @@ def build_env_info(scene_id: str, scannet_path: str, scanrefer_data: List[Dict] 
                 all_objects.append(obj_info)
 
                 
-                print(f"Found {label} object {object_id} with {properties['vertex_count']} vertices")
+                # print(f"Found {label} object {object_id} with {properties['vertex_count']} vertices")
     
     if not all_objects:
         return f"No objects found in scene {scene_id}"
@@ -253,7 +254,7 @@ def build_env_info(scene_id: str, scannet_path: str, scanrefer_data: List[Dict] 
         env_info += f"Center at ({center[0]:.2f}, {center[1]:.2f}, {center[2]:.2f}), "
         env_info += f"Size {size_desc}, Color {color_desc}\n"
     
-    print(f"Completed processing scene {scene_id}")
+    # print(f"Completed processing scene {scene_id}")
     return env_info
 
 def get_scanrefer_environment_info(scene_id: str, scanrefer_data: List[Dict]) -> str:
@@ -457,16 +458,16 @@ Reason: <reason>
     answer = get_response(USER_PROMPT, system_prompt=SYSTEM_PROMPT)
     
     alternative = answer.split('Alternative: ')[1].split('Reason: ')[0].strip()
-    print('-'*10 + 'Alternative' + '-'*10)
-    print(alternative)
-    print('-'*10)
+    # print('-'*10 + 'Alternative' + '-'*10)
+    # print(alternative)
+    # print('-'*10)
     try:
         reason = answer.split('Reason: ')[1].strip()
     except:
         reason = "None"
-    print('-'*10 + 'REASON' + '-'*10)
-    print(reason)
-    print('-'*10)
+    # print('-'*10 + 'REASON' + '-'*10)
+    # print(reason)
+    # print('-'*10)
     return {
         'alternative': alternative,
         'reason': reason
@@ -497,7 +498,7 @@ def get_object_color_from_scanrefer(object_id: str, scene_id: str, scanrefer_dat
 
 def load_existing_dataset(existing_dataset_path: str) -> Set[str]:
     if not os.path.exists(existing_dataset_path):
-        print(f"Existing dataset file does not exist: {existing_dataset_path}")
+        print(f"**Existing dataset file does not exist: {existing_dataset_path}")
         return set()
     
     try:
@@ -509,28 +510,24 @@ def load_existing_dataset(existing_dataset_path: str) -> Set[str]:
             if 'scene_id' in item:
                 processed_scenes.add(item['scene_id'])
         
-        print(f"Loaded {len(processed_scenes)} processed scenes from existing dataset")
+        # print(f"Loaded {len(processed_scenes)} processed scenes from existing dataset")
         return processed_scenes
     
     except Exception as e:
-        print(f"Error loading existing dataset: {e}")
+        print(f"**Error loading existing dataset: {e}")
         return set()
 
 def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_path: str, 
                             max_scenes: int = 10, max_samples: int = 10, 
-                            existing_dataset_path: str = None, generate_natural: bool = True):
+                            existing_dataset_path: str = None, generate_natural: bool = False):
     clear_env_cache()
-    print("Loading ScanRefer data...")
+    # print("Loading ScanRefer data...")
     scanrefer_data = load_scanrefer_data(scanrefer_path)
     
     if existing_dataset_path is None and os.path.exists(output_path):
         existing_dataset_path = output_path
-        print(f"Output file {output_path} already exists, will use it to skip processed scenes")
-    
-    if max_scenes is not None:
-        print(f"Processing first {max_scenes} scenes from {len(scanrefer_data)} ScanRefer data...")
-    else:
-        print(f"Processing all {len(scanrefer_data)} ScanRefer data...")
+        # print(f"Output file {output_path} already exists, will use it to skip processed scenes")
+   f"Processing all {len(scanrefer_data)} ScanRefer data...")
     
     dataset = [] 
     processed_scenes = set()
@@ -541,13 +538,18 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
     if existing_dataset_path:
         with open(existing_dataset_path, 'r', encoding='utf-8') as f:
             exist_dataset = json.load(f)
-        print(f"Loaded {len(exist_dataset)} existing samples")
 
     processed_triples = set()
     for item in exist_dataset:
         if 'scene_id' in item and 'object_id' in item and 'ambiguity_type' in item:
             processed_triples.add((item['scene_id'], item['object_id'], item['ambiguity_type']))
 
+    all_scenes = list(set([item['scene_id'] for item in scanrefer_data]))
+    if max_scenes is not None:
+        all_scenes = all_scenes[:max_scenes]
+
+    pbar = tqdm(total=len(all_scenes), desc="Processing scenes", unit="scene")
+    
     for item in scanrefer_data:
         if max_scenes is not None and len(processed_scenes) >= max_scenes:
             break
@@ -555,8 +557,12 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
         object_name = item['object_name']
         object_id = item['object_id']
         description = item['description']
-        
+
+        is_new_scene = scene_id not in processed_scenes
         processed_scenes.add(scene_id)
+        if is_new_scene:
+            pbar.update(1)
+            pbar.set_postfix({"current_scene": scene_id, "samples": len(dataset)})
         if object_name.endswith('s'): # skip plural objects, because we could not distinguish them!!
             continue
 
@@ -600,7 +606,7 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
             
             dataset.append(dialogue)
             positive_count += 1
-            print(f"Generated positive sample {positive_count}: {clear_question}")
+            # print(f"Generated positive sample {positive_count}: {clear_question}")
         
         # ----------------------------NEGATIVE SAMPLES--------------------------------
         # ----------------------------REFERENTIAL AMBIGUITY--------------------------------
@@ -642,7 +648,7 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
             
             dataset.append(dialogue)
             negative_count += 1
-            print(f"Generated negative sample {negative_count} (multiple objects): {ambiguous_question}")
+            # print(f"Generated negative sample {negative_count} (multiple objects): {ambiguous_question}")
         
         # ----------------------------MISSING OBJECT AMBIGUITY--------------------------------
         GENERATE_MISSING_OBJECT_AMBIGUITY = (scene_id, object_id, 'nonexistent_object') not in processed_triples
@@ -675,7 +681,7 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
             
             dataset.append(dialogue)
             negative_count += 1
-            print(f"Generated negative sample {negative_count} (nonexistent object): {navigation_question}")
+            # print(f"Generated negative sample {negative_count} (nonexistent object): {navigation_question}")
 
         # ----------------------------COLOR AMBIGUITY--------------------------------
         GENERATE_COLOR_AMBIGUITY = (scene_id, object_id, 'color_ambiguity') not in processed_triples
@@ -705,12 +711,14 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
                 }
                 dataset.append(dialogue)
                 negative_count += 1
-                print(f"Generated negative sample {negative_count} (color ambiguity): {alternative_question}")
+                # print(f"Generated negative sample {negative_count} (color ambiguity): {alternative_question}")
         
         processed_scenes.add(scene_id)
-        if len(dataset) > max_samples:
+        if max_samples is not None and len(dataset) > max_samples:
             break
 
+    pbar.close()
+    
     # save dataset
     print(f"\n=== Dataset Generation Summary ===")
     print(f"Total samples generated: {len(dataset)}")
@@ -740,9 +748,9 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
 
 
 def main():
-    scanrefer_path = "scanrefer/ScanRefer_filtered_train.json"
-    scannet_path = "scannet"
-    output_path = "ambiguity_dataset/natural/ambiguity_dataset_temp2.json"
+    scanrefer_path = "/Users/yaqi/cmu/course/cap-planning/scanrefer/ScanRefer_filtered_train.json"
+    scannet_path = "/Users/yaqi/cmu/course/cap-planning/scannet"
+    output_path = "/Users/yaqi/cmu/course/cap-planning/ambiguity_dataset/scanfer_based-new1008/ambiguity_dataset.json"
 
     if not os.path.exists(scanrefer_path):
         print(f"ScanRefer file does not exist: {scanrefer_path}")
@@ -755,8 +763,9 @@ def main():
     construct_ambiguity_dataset(scanrefer_path, 
                                 scannet_path,
                                 output_path,
-                                max_scenes=2,
-                                max_samples=5)
+                                max_scenes=20,
+                                max_samples=None,
+                                generate_natural=False)
 
 if __name__ == "__main__":
     main()
