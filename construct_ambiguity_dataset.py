@@ -332,32 +332,32 @@ def simplify_object_name(object_name: str) -> str:
     return object_name
 
 def get_natural_question_for_object(object_name: str, color: str = None) -> str:
-    # TODO: not good enough to generate natural questions
     SYSTEM_PROMPT = """
 You are generating natural, human-like questions that people would ask when they need to interact with or find an object.
 The questions should:
-1. Be based on the object's FUNCTION or USE CASE, not just its name
-2. Sound natural and conversational, like real human speech
-3. Be short and simple (under 15 words)
-4. Avoid robotic phrases like "navigate to", "locate", "point to"
-5. Express a human need, desire, or situation that requires the object
-6. When a color is specified, integrate it naturally into the question (e.g., "I need the red one" or "pass me that blue thing")
+1. Be based on the object's FUNCTION and simulate real human needs, NOT A NAIVE QUESTION LIKE "where is ..." or "go to ...".
+2. Simulate real conversations between humans and robots. 
+3. Simulate a human's need and desire to ask a navigation robot to find an object. The goal is to use your generated question to stimulate the robot's ability to detect the user's intention.
+4. Be short and simple (under 15 words)
+5. When a color is specified, integrate it naturally into the question.
+6. AVOID using ambiguous demonstrative pronouns like "that", "this", "it", "those", etc.
+7. AVOID USING the original object name in the question.
 
 Examples WITHOUT color:
-- soap dispenser → "I want to wash my hands" / "My hands are dirty, pass me that thing"
-- chair → "I'm tired, I need to sit down" / "Guide me to have a seat"
-- lamp → "It's too dark here" / "Can you turn on the light?"
-- trash can → "Where should I throw this?" / "I need to dispose of this"
-- microwave → "I want to heat this up" / "This food is cold"
+- soap dispenser → "I want to wash my hands"
+- chair → "I'm tired, I need to sit down"
+- lamp → "It's too dark here"
+- trash can → "Where should I throw the trash?" / "I need to dispose of the trash"
+- microwave → "I want to heat the food up" / "The food is cold"
 - bed → "I'm exhausted, I need to lie down" / "Guide me to have a rest"
 - refrigerator → "I'm thirsty" / "Where's something cold to drink?"
-- window → "I need fresh air" / "Can you open the window?"
+- window → "I need fresh air"
 
 Examples WITH color:
 - blue chair → "I'm tired, can I sit on the blue one?" / "I need to sit on that blue seat"
-- red lamp → "It's dark, turn on the red light" / "Can you switch on the red one?"
-- green bottle → "I'm thirsty, pass me the green one" / "Where's that green bottle?"
-- white towel → "I need to dry my hands, give me the white one" / "Can I have that white towel?"
+- red lamp → "It's dark, turn on the red light"
+- green bottle → "I'm thirsty, pass me the green one"
+- brown guitar → "Let's practice an instrument."
 
 Generate ONE natural question for the given object. Only output the question, nothing else.
 """
@@ -479,7 +479,7 @@ def alternate_color_description(color_description: str) -> str:
     return color_description
 
 def get_ground_truth_color(description: str) -> str:
-    # TODO
+    # TODO: use OpenAI API to get the ground truth color
     for color in COLOR_OBJECTS:
         if color in description:
             return color
@@ -516,7 +516,9 @@ def load_existing_dataset(existing_dataset_path: str) -> Set[str]:
         print(f"Error loading existing dataset: {e}")
         return set()
 
-def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_path: str, max_scenes: int = 10, positive_ratio: float = 0.5, existing_dataset_path: str = None):
+def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_path: str, 
+                            max_scenes: int = 10, max_samples: int = 10, 
+                            existing_dataset_path: str = None, generate_natural: bool = True):
     clear_env_cache()
     print("Loading ScanRefer data...")
     scanrefer_data = load_scanrefer_data(scanrefer_path)
@@ -524,11 +526,6 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
     if existing_dataset_path is None and os.path.exists(output_path):
         existing_dataset_path = output_path
         print(f"Output file {output_path} already exists, will use it to skip processed scenes")
-    
-    already_processed_scenes = set()
-    if existing_dataset_path:
-        already_processed_scenes = load_existing_dataset(existing_dataset_path)
-        print(f"Will skip {len(already_processed_scenes)} already processed scenes")
     
     if max_scenes is not None:
         print(f"Processing first {max_scenes} scenes from {len(scanrefer_data)} ScanRefer data...")
@@ -539,8 +536,18 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
     processed_scenes = set()
     positive_count = 0
     negative_count = 0
-    sample_counter = 0
     
+    exist_dataset = []
+    if existing_dataset_path:
+        with open(existing_dataset_path, 'r', encoding='utf-8') as f:
+            exist_dataset = json.load(f)
+        print(f"Loaded {len(exist_dataset)} existing samples")
+
+    processed_triples = set()
+    for item in exist_dataset:
+        if 'scene_id' in item and 'object_id' in item and 'ambiguity_type' in item:
+            processed_triples.add((item['scene_id'], item['object_id'], item['ambiguity_type']))
+
     for item in scanrefer_data:
         if max_scenes is not None and len(processed_scenes) >= max_scenes:
             break
@@ -548,9 +555,6 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
         object_name = item['object_name']
         object_id = item['object_id']
         description = item['description']
-        
-        if scene_id in already_processed_scenes:
-            continue
         
         processed_scenes.add(scene_id)
         if object_name.endswith('s'): # skip plural objects, because we could not distinguish them!!
@@ -562,17 +566,15 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
     
         object_counts = extract_object_counts_from_scannet(aggregation_data)
         
-        simple_name = simplify_object_name(object_name) # convert to single object name
-        count = object_counts.get(simple_name, 0) # object_counts is a dictionary of object name and count
+        object_name = object_name.replace('_', ' ')
+        count = object_counts.get(object_name, 0)
         
-        should_generate_positive = (sample_counter % 2 == 0)
-        sample_counter += 1
-        
-        # POSITIVE SAMPLE (NO AMBIGUITY) ----------------------------CLEAR REFERENCE--------------------------------
+        # ----------------------------POSITIVE SAMPLE--------------------------------
         # Only generate positive sample if there's exactly ONE object of this type
-        if should_generate_positive and count == 1:
-            clear_question = create_navigation_question(simple_name, use_natural=True)
-            robot_response = f"I found the {simple_name}. {description}"
+        GENERATE_POSITIVE = (scene_id, object_id, 'no_ambiguity') not in processed_triples
+        if count == 1 and GENERATE_POSITIVE:
+            clear_question = create_navigation_question(object_name, use_natural=generate_natural)
+            robot_response = f"I found the {object_name}. {description}"
             
             env_info = cached_build_env_info(scene_id, scannet_path, scanrefer_data)
             
@@ -599,57 +601,57 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
             dataset.append(dialogue)
             positive_count += 1
             print(f"Generated positive sample {positive_count}: {clear_question}")
-        elif should_generate_positive and count > 1:
-            print(f"Skipped positive sample generation for {simple_name}: {count} objects found in scene")
         
-        # NEGATIVE SAMPLES (AMBIGUITY) ----------------------------VARIOUS AMBIGUITY TYPES--------------------------------
-        else:
-            # MULTIPLE OBJECTS ----------------------------REFERENTIAL AMBIGUITY--------------------------------
-            if count > 1:  # there is ambiguity
-                # create ambiguity dialogue
-                ambiguous_question = create_ambiguous_question(simple_name, None, use_natural=True)
-                robot_response = f"There are multiple {simple_name}s, which {simple_name} are you referring to?"
-                
-                # clean description, strip, replace two consecutive spaces with one space
-                description = re.sub(r'\s+', ' ', description).strip()
-                clarification_response = f"{description}"
-                
-                env_info = cached_build_env_info(scene_id, scannet_path, scanrefer_data)
-                
-                dialogue = {
-                    "scene_id": scene_id,
-                    "object_name": object_name,
-                    "object_id": object_id,
-                    "original_description": description,
-                    "environment_info": env_info,
-                    "sample_type": "negative",
-                    "ambiguity_type": "multiple_objects",
-                    "dialogue": [
-                        {
-                            "speaker": "User",
-                            "text": ambiguous_question
-                        },
-                        {
-                            "speaker": "Robot", 
-                            "text": robot_response
-                        },
-                        {
-                            "speaker": "User",
-                            "text": clarification_response
-                        }
-                    ]
-                }
-                
-                dataset.append(dialogue)
-                negative_count += 1
-                print(f"Generated negative sample {negative_count} (multiple objects): {ambiguous_question}")
+        # ----------------------------NEGATIVE SAMPLES--------------------------------
+        # ----------------------------REFERENTIAL AMBIGUITY--------------------------------
+        GENERATE_REFERENTIAL_AMBIGUITY = (scene_id, object_id, 'multiple_objects') not in processed_triples
+        if count > 1 and GENERATE_REFERENTIAL_AMBIGUITY:  # there is ambiguity
+            # create ambiguity dialogue
+            ambiguous_question = create_ambiguous_question(object_name, None, use_natural=generate_natural)
+            robot_response = f"There are multiple {object_name}s, which {object_name} are you referring to?"
             
-            # NONEXISTENT OBJECTS ----------------------------MISSING OBJECT AMBIGUITY--------------------------------
+            # clean description, strip, replace two consecutive spaces with one space
+            description = re.sub(r'\s+', ' ', description).strip()
+            clarification_response = f"{description}"
+            
+            env_info = cached_build_env_info(scene_id, scannet_path, scanrefer_data)
+            
+            dialogue = {
+                "scene_id": scene_id,
+                "object_name": object_name,
+                "object_id": object_id,
+                "original_description": description,
+                "environment_info": env_info,
+                "sample_type": "negative",
+                "ambiguity_type": "multiple_objects",
+                "dialogue": [
+                    {
+                        "speaker": "User",
+                        "text": ambiguous_question
+                    },
+                    {
+                        "speaker": "Robot", 
+                        "text": robot_response
+                    },
+                    {
+                        "speaker": "User",
+                        "text": clarification_response
+                    }
+                ]
+            }
+            
+            dataset.append(dialogue)
+            negative_count += 1
+            print(f"Generated negative sample {negative_count} (multiple objects): {ambiguous_question}")
+        
+        # ----------------------------MISSING OBJECT AMBIGUITY--------------------------------
+        GENERATE_MISSING_OBJECT_AMBIGUITY = (scene_id, object_id, 'nonexistent_object') not in processed_triples
+        if GENERATE_MISSING_OBJECT_AMBIGUITY:
             environment_info = get_scanrefer_environment_info(scene_id, scanrefer_data)
-            nonexistent_object_json = create_nonexistent_objects(simple_name, environment_info, scene_id, object_id)
+            nonexistent_object_json = create_nonexistent_objects(object_name, environment_info, scene_id, object_id)
             alternative_object = nonexistent_object_json['alternative']
             reason = nonexistent_object_json['reason']
-            navigation_question = create_ambiguous_question(simple_name, alternative_object, use_natural=True)
+            navigation_question = create_ambiguous_question(object_name, alternative_object, use_natural=generate_natural)
             
             env_info = cached_build_env_info(scene_id, scannet_path, scanrefer_data)
             
@@ -675,12 +677,14 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
             negative_count += 1
             print(f"Generated negative sample {negative_count} (nonexistent object): {navigation_question}")
 
-            # COLOR AMBIGUITY ---------------------------- COLOR AMBIGUITY--------------------------------
+        # ----------------------------COLOR AMBIGUITY--------------------------------
+        GENERATE_COLOR_AMBIGUITY = (scene_id, object_id, 'color_ambiguity') not in processed_triples
+        if GENERATE_COLOR_AMBIGUITY:
             ground_truth_color = get_ground_truth_color(description)
             if any(color in description for color in COLOR_OBJECTS):
                 scene_color_object_combinations = get_scene_object_color_combinations(scene_id, scanrefer_data)
                 alternative_color = get_similar_color_safe(ground_truth_color, object_name, scene_color_object_combinations)
-                alternative_question = create_ambiguous_question(simple_name, alternative_color, use_natural=True)
+                alternative_question = create_ambiguous_question(object_name, alternative_color, use_natural=generate_natural)
                 env_info = cached_build_env_info(scene_id, scannet_path, scanrefer_data)
                 dialogue = {
                     "scene_id": scene_id,
@@ -691,6 +695,7 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
                     "environment_info": env_info,
                     "sample_type": "negative",
                     "ambiguity_type": "color_ambiguity",
+                    "alternative_color": alternative_color,
                     "dialogue": [
                         {
                             "speaker": "User",
@@ -703,6 +708,8 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
                 print(f"Generated negative sample {negative_count} (color ambiguity): {alternative_question}")
         
         processed_scenes.add(scene_id)
+        if len(dataset) > max_samples:
+            break
 
     # save dataset
     print(f"\n=== Dataset Generation Summary ===")
@@ -726,17 +733,16 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
             json.dump(combined_data, f, ensure_ascii=False, indent=2)
         
         print(f"Combined dataset saved to: {output_path} (total samples: {len(combined_data)})")
-    except Exception as e:
-        print(f"Error merging datasets: {e}")
+    except Exception:
         print(f"Saving new samples to: {output_path}")
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(dataset, f, ensure_ascii=False, indent=2)
 
 
 def main():
-    scanrefer_path = "/Users/yaqi/cmu/course/cap-planning/scanrefer/ScanRefer_filtered_train.json"
-    scannet_path = "/Users/yaqi/cmu/course/cap-planning/scannet"
-    output_path = "/Users/yaqi/cmu/course/cap-planning/ambiguity_dataset/natural/ambiguity_dataset_temp.json"
+    scanrefer_path = "scanrefer/ScanRefer_filtered_train.json"
+    scannet_path = "scannet"
+    output_path = "ambiguity_dataset/natural/ambiguity_dataset_temp2.json"
 
     if not os.path.exists(scanrefer_path):
         print(f"ScanRefer file does not exist: {scanrefer_path}")
@@ -750,7 +756,7 @@ def main():
                                 scannet_path,
                                 output_path,
                                 max_scenes=2,
-                                positive_ratio=0.5)
+                                max_samples=5)
 
 if __name__ == "__main__":
     main()
