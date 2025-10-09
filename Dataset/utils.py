@@ -33,89 +33,105 @@ COLOR_SIMILARITY_GROUPS = {
 COLOR_OBJECTS = ['red', 'green', 'blue', 'yellow', 'white', 'black', 'orange', 'purple', 'brown', 'silver','gold', 'gray']
 FILTER_OBJECTS = ['wall', 'floor', 'ceiling', 'object']
 
-def get_dominant_color(colors, n_bins=32):
+def get_dominant_colors(colors, n_bins=256, n=3):
     """Get the most common color using histogram binning."""
     # Bin colors to reduce noise
     binned = (colors // (256 // n_bins)) * (256 // n_bins)
     
     # Find unique colors and their counts
     unique_colors, counts = np.unique(binned, axis=0, return_counts=True)
-    
-    # Return most common
-    dominant_idx = np.argmax(counts)
-    return unique_colors[dominant_idx].astype(int)
 
-# def rgb_to_color_name(rgb):
-#     """
-#     Convert RGB tuple to closest named color using webcolors.
-    
-#     Args:
-#         rgb: tuple or array of (R, G, B) values
-    
-#     Returns:
-#         Name of closest CSS3 color
-#     """
-#     rgb_tuple = tuple(int(x) for x in rgb)
-    
-#     try:
-#         # Try exact match first
-#         return webcolors.rgb_to_name(rgb_tuple)
-#     except ValueError:
-#         # Find closest color name
-#         min_distance = float('inf')
-#         closest_name = None
-        
-#         for name in webcolors.CSS3_NAMES_TO_HEX:
-#             color_rgb = webcolors.name_to_rgb(name)
-#             distance = sum((c1 - c2) ** 2 for c1, c2 in zip(rgb_tuple, color_rgb))
-            
-#             if distance < min_distance:
-#                 min_distance = distance
-#                 closest_name = name
-        
-#         return closest_name
-    
+    colors = {}
+
+    for i in range(len(unique_colors)):
+        color = rgb_to_color_name(unique_colors[i].astype(int))
+        if colors.get(color) is None:
+            colors[color] = counts[i]
+        else:
+            colors[color] += counts[i]
+
+    items_sorted = sorted(colors.items(), key=lambda kv: kv[1], reverse=True)
+
+    top = [k for k, v in items_sorted[:n]]
+
+    return top
+
 def rgb_to_color_name(rgb):
     """
-    Map RGB values (0-255) to the closest named color.
+    Convert RGB tuple to closest named color using webcolors.
     
     Args:
-        r, g, b: Red, green, blue values (0-255)
+        rgb: tuple or array of (R, G, B) values
     
     Returns:
-        str: The closest color name
+        Name of closest CSS3 color
     """
-    # Define RGB values for each named color
-    color_map = {
-        'red': (255, 0, 0),
-        'green': (0, 128, 0),
-        'blue': (0, 0, 255),
-        'yellow': (255, 255, 0),
-        'white': (255, 255, 255),
-        'black': (0, 0, 0),
-        'orange': (255, 165, 0),
-        'purple': (128, 0, 128),
-        'brown': (165, 42, 42),
-        'silver': (192, 192, 192),
-        'gold': (255, 215, 0),
-        'gray': (128, 128, 128)
-    }
-
-    r, g, b = tuple(int(x) for x in rgb)
+    rgb_tuple = tuple(int(x) for x in rgb)
     
-    # Calculate Euclidean distance to each color
-    min_distance = float('inf')
-    closest_color = None
-    
-    for color_name, (cr, cg, cb) in color_map.items():
-        # Euclidean distance in RGB space
-        distance = math.sqrt((r - cr)**2 + (g - cg)**2 + (b - cb)**2)
+    try:
+        # Try exact match first
+        return webcolors.rgb_to_name(rgb_tuple)
+    except ValueError:
+        # Find closest color name
+        min_distance = float('inf')
+        closest_name = None
         
-        if distance < min_distance:
-            min_distance = distance
-            closest_color = color_name
+        color_names = webcolors._definitions._CSS3_NAMES_TO_HEX
+        for name in color_names.keys():
+            color_rgb = webcolors.name_to_rgb(name)
+            distance = sum((c1 - c2) ** 2 for c1, c2 in zip(rgb_tuple, color_rgb))
+            
+            if distance < min_distance:
+                min_distance = distance
+                closest_name = name
+        
+        return closest_name
     
-    return closest_color
+# def rgb_to_color_name(rgb):
+#     """
+#     Map RGB values (0-255) to the closest named color.
+    
+#     Args:
+#         r, g, b: Red, green, blue values (0-255)
+    
+#     Returns:
+#         str: The closest color name
+#     """
+#     # Define RGB values for each named color
+#     color_map = {
+#         'red': (255, 0, 0),
+#         'green': (0, 128, 0),
+#         'blue': (0, 0, 255),
+#         'yellow': (255, 255, 0),
+#         'white': (255, 255, 255),
+#         'black': (0, 0, 0),
+#         'orange': (255, 165, 0),
+#         'purple': (128, 0, 128),
+#         'brown': (165, 42, 42),
+#         'silver': (192, 192, 192),
+#         'gold': (255, 215, 0),
+#         'gray': (128, 128, 128)
+#     }
+
+#     # color_map = {
+#     #     color: tuple(webcolors.name_to_rgb(color))  for color in COLOR_OBJECTS
+#     # }
+
+#     r, g, b = tuple(int(x) for x in rgb)
+    
+#     # Calculate Euclidean distance to each color
+#     min_distance = float('inf')
+#     closest_color = None
+    
+#     for color_name, (cr, cg, cb) in color_map.items():
+#         # Euclidean distance in RGB space
+#         distance = math.sqrt((r - cr)**2 + (g - cg)**2 + (b - cb)**2)
+        
+#         if distance < min_distance:
+#             min_distance = distance
+#             closest_color = color_name
+    
+#     return closest_color
 
 def get_object_colors_and_coordinates(ply_path, aggregation_path, segmentation_path):
     """
@@ -178,9 +194,8 @@ def get_object_colors_and_coordinates(ply_path, aggregation_path, segmentation_p
         centroid = obj_coords.mean(axis=0)
         
         if len(obj_colors) > 0:
-            dominant_rgb = get_dominant_color(obj_colors)
             object_colors[obj_id] = {
-                "color": rgb_to_color_name(dominant_rgb),
+                "color": get_dominant_colors(obj_colors),
                 "centroid": centroid,
                 "dimensions": bbox_size
             }
