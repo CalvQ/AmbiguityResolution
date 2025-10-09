@@ -14,10 +14,10 @@ Note: Please also add your OPENAI API Key to the utils.py file
 
 ### Extracting Color and Coordinates of Objects
 ```python
-python generate -m cc
+python generate.py -m cc
 ```
 
 ### Generating Ambiguious Questions
 ```python
-python generate -m ambiguity -o {output_file}
+python generate.py -m ambiguity -o {output_file}
 ```

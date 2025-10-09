@@ -1,7 +1,7 @@
 from utils import get_object_colors_and_coordinates, create_ambiguous_question, get_env_info_and_stats, get_similar_color, create_nonexistent_objects, create_navigation_question
 import os
 import argparse
-from typing import List, Optional, Any, Namespace
+from typing import List, Optional, Any
 import json
 import numpy as np
 import random
@@ -11,7 +11,7 @@ scannet_data_path = "scannet_data/scans"
 
 SAMPLES_PER_SCENE = 5
 
-def parse_args(arg_list: Optional[List[str]] = None) -> Namespace:
+def parse_args(arg_list: Optional[List[str]] = None):
     """
     Command Line Arguments
 
@@ -66,10 +66,10 @@ def main(arg_list: Optional[List[str]] = None) -> None:
                     "segments": obj["segments"],
                     "label": obj["label"],
                     "color": colors[obj["id"]]["color"],
-                    "centroid": colors[obj["id"]]["centroid"],
-                    "dimensions": colors[obj["id"]]["dimensions"],
+                    "centroid": [float(x) for x in colors[obj["id"]]["centroid"]],
+                    "dimensions": [float(x) for x in colors[obj["id"]]["dimensions"]],
                 } for obj in scene_objects['segGroups'] if colors.get(obj["id"]) != None]
-                with open(f"{scannet_data_path}/{f}/{f}_cc.aggregation.json") as f:
+                with open(f"{scannet_data_path}/{f}/{f}_cc.aggregation.json", "w") as f:
                     json.dump(scene_objects, f, indent=4)
 
         else:

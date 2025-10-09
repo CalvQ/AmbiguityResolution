@@ -4,7 +4,7 @@ from plyfile import PlyData
 import webcolors
 import math
 import random
-from typing import List, Optional, Any, Namespace, Tuple
+from typing import List, Optional, Any, Tuple
 import os
 import openai
 
@@ -165,6 +165,10 @@ def get_object_colors_and_coordinates(ply_path, aggregation_path, segmentation_p
         obj_id = obj['objectId']
         obj_label = obj['label']
         segments = obj['segments']
+        
+        # Find all vertices belonging to this object
+        mask = np.isin(seg_indices, segments)
+        obj_colors = colors[mask]
         obj_coords = coords[mask]
 
         bbox_min = obj_coords.min(axis=0)
@@ -172,10 +176,6 @@ def get_object_colors_and_coordinates(ply_path, aggregation_path, segmentation_p
         bbox_center = (bbox_min + bbox_max) / 2
         bbox_size = bbox_max - bbox_min
         centroid = obj_coords.mean(axis=0)
-        
-        # Find all vertices belonging to this object
-        mask = np.isin(seg_indices, segments)
-        obj_colors = colors[mask]
         
         if len(obj_colors) > 0:
             dominant_rgb = get_dominant_color(obj_colors)
