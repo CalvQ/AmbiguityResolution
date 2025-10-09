@@ -1,0 +1,4 @@
+plyfile
+numpy
+webcolors
+openai
