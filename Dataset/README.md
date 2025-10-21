@@ -25,3 +25,8 @@ python generate.py -m cc
 ```shell
 python generate.py -m ambiguity -o {output_file}
 ```
+
+if want to use scanrefer's description as the input of LLM to generate missing attribute ambiguity questions, download from [scanrefer](https://drive.google.com/file/d/1x9PcZctaLLC79vF42ktl-bNRnixrKO15/view?usp=sharing), unzip files, then run
+
+```shell
+python generate.py -m ambiguity -o {output_file} -scanrefer_data_path {your_scanrefer_data_path}

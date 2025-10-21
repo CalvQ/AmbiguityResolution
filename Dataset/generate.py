@@ -1,4 +1,4 @@
-from utils import get_object_colors_and_coordinates, create_ambiguous_question, get_env_info_and_stats, get_similar_color, create_nonexistent_objects, create_navigation_question
+from utils import get_object_colors_and_coordinates, create_ambiguous_question, get_env_info_and_stats, get_similar_color, create_nonexistent_objects, create_navigation_question, get_scanrefer_environment_info
 import os
 import argparse
 from typing import List, Optional, Any
@@ -76,6 +76,13 @@ def main(arg_list: Optional[List[str]] = None) -> None:
             print(f"The folder '{scannet_data_path}' does not exist, please download the required ScanNet data with 'sh download_scannet_data.sh' first.")
     
     elif args.mode == "ambiguity":
+        if args.scanrefer_data_path:
+            try:
+                with open(args.scanrefer_data_path, 'r', encoding='utf-8') as f:
+                    scanrefer_data = json.load(f)
+            except Exception as e:
+                raise ValueError(f"Error loading ScanRefer data: {e}")
+
         if os.path.isdir(scannet_data_path):
             files = os.listdir(scannet_data_path)
             for f in tqdm(files):
@@ -146,7 +153,11 @@ def main(arg_list: Optional[List[str]] = None) -> None:
                         instance = object_stats[object]
                         id = instance['id'][index]
                         color = instance['color'][index]
-                        alternative_object_json = create_nonexistent_objects(object, env_info)
+                        if args.scanrefer_data_path:
+                            natural_language_env_info = get_scanrefer_environment_info(f, scanrefer_data)
+                            alternative_object_json = create_nonexistent_objects(object, natural_language_env_info)
+                        else:
+                            alternative_object_json = create_nonexistent_objects(object, env_info)
                         alternative_object = alternative_object_json['alternative']
                         reason = alternative_object_json['reason']
                         

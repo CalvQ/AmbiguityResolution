@@ -329,7 +329,28 @@ def get_similar_color(ground_truth_color: str) -> str:
     else:
         available_colors = [color for color in COLOR_OBJECTS if color != ground_truth_color]
         return random.choice(available_colors)
+
+def get_scanrefer_environment_info(scene_id: str, scanrefer_data: List[Dict]) -> str:
+    scene_objects = [obj for obj in scanrefer_data if obj['scene_id'] == scene_id]
     
+    if not scene_objects:
+        raise ValueError(f"Scene {scene_id} not found in ScanRefer data.")
+    
+    descriptions = []
+    
+    for obj in scene_objects:
+        object_name = obj['object_name']
+        description = obj['description']
+        descriptions.append(f"- {object_name}: {description}")
+    
+    if descriptions:
+        env_info = f"Environment description for scene {scene_id}:\n" + "\n".join(descriptions)
+    else:
+        env_info = f"No object descriptions found for scene {scene_id}."
+    
+    return env_info
+
+
 def create_nonexistent_objects(object_name: str, environment_info:str) -> dict:
     SYSTEM_PROMPT = """
 You will be given an object name and environment info. 
