@@ -326,11 +326,6 @@ def extract_object_counts_from_scannet(aggregation_data: Dict) -> Dict[str, int]
     
     return dict(object_counts)
 
-def simplify_object_name(object_name: str) -> str:
-    object_name = object_name.replace('_', ' ')
-    if object_name.endswith('s') and len(object_name) > 3:
-        return object_name[:-1]
-    return object_name
 
 def get_natural_question_for_object(object_name: str, color: str = None) -> str:
     SYSTEM_PROMPT = """
