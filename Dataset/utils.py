@@ -8,10 +8,10 @@ from typing import List, Optional, Any, Tuple
 import os
 import openai
 
-os.environ['OPENAI_API_KEY'] = 'YOUR_OPENAI_API_KEY'
+os.environ['OPENAI_API_KEY'] = 'sk-zwFJ4FnnbyCE3JxIidJm8Q'
 
 client = openai.OpenAI(
-    api_key='YOUR_OPENAI_API_KEY',
+    api_key='sk-zwFJ4FnnbyCE3JxIidJm8Q',
     base_url="https://ai-gateway.andrew.cmu.edu/"
 )
 
@@ -27,11 +27,27 @@ COLOR_SIMILARITY_GROUPS = {
     'brown': ['orange', 'black'],
     'silver': ['black', 'white', 'gray'],
     'gold': ['yellow', 'orange'],
-    'gray': ['black', 'white', 'silver']
+    'gray': ['black', 'white', 'silver'],
+    'wheat': ['yellow', 'brown'],
+    'peru': ['brown', 'yellow'],
+    'wood': ['brown', 'yellow'],
+    'maroon': ['brown', 'red', 'black'],
+    'lavender': ['purple', 'blue', 'white'],
 }
 
 COLOR_OBJECTS = ['red', 'green', 'blue', 'yellow', 'white', 'black', 'orange', 'purple', 'brown', 'silver','gold', 'gray']
 FILTER_OBJECTS = ['wall', 'floor', 'ceiling', 'object']
+
+import numpy as np
+
+def convert_numpy(obj):
+    if isinstance(obj, np.integer):
+        return int(obj)
+    elif isinstance(obj, np.floating):
+        return float(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    raise TypeError(f"Type {type(obj)} not serializable")
 
 def get_dominant_colors(colors, n_bins=256, n=3):
     """Get the most common color using histogram binning."""
@@ -260,23 +276,29 @@ The questions should:
 4. Be short and simple (under 15 words)
 5. When a color is specified, integrate it naturally into the question.
 6. AVOID using ambiguous demonstrative pronouns like "that", "this", "it", "those", etc.
-7. AVOID USING the original object name in the question.
+7. Genrated question should only be able to refer to the given. 
+For example, if the given object is "shelf" and generate "Where can I put my books to keep them organized?" is NOT GOOD, because the shelf is not the only place to put books, books can also be kept in desk.
+So, when given the object "shelf", you can generate "I want to get something from the shelf".
+8. CAN CONTAIN the object name in the question, UNLESS the question is not possible to refer to the other object.
+9. The generated question only mentions the object given, NOT ANY OTHER OBJECTS.
+For exmaple, if the given object is "cabinet", the question cannot be "Can you open the silver cabinet to get my files?" because "files" is not a given object.
+It should be "Can you open the silver cabinet to "
 
 Examples WITHOUT color:
-- soap dispenser → "I want to wash my hands"
-- chair → "I'm tired, I need to sit down"
-- lamp → "It's too dark here"
-- trash can → "Where should I throw the trash?" / "I need to dispose of the trash"
-- microwave → "I want to heat the food up" / "The food is cold"
-- bed → "I'm exhausted, I need to lie down" / "Guide me to have a rest"
-- refrigerator → "I'm thirsty" / "Where's something cold to drink?"
+- soap dispenser → "I want to wash my hands with the soap dispenser"
+- chair → "I'm tired, I need to sit down on the chair"
+- lamp → "It's too dark here, turn on the lamp"
+- trash can → "I want to throw away the trash" / "I need to dispose of the trash"
+- microwave → "I want to heat the food up with the microwave"
+- bed → "I'm exhausted, I need to lie down"
+- refrigerator → "I'm thirsty, get me something cold to drink from the refrigerator"
 - window → "I need fresh air"
 
 Examples WITH color:
-- blue chair → "I'm tired, can I sit on the blue one?" / "I need to sit on that blue seat"
+- blue chair → "I'm tired, I want to sit on the blue chair."
 - red lamp → "It's dark, turn on the red light"
-- green bottle → "I'm thirsty, pass me the green one"
-- brown guitar → "Let's practice an instrument."
+- green bottle → "I'm thirsty, pass me the green bottle"
+- brown guitar → "Let's practice the guitar."
 
 Generate ONE natural question for the given object. Only output the question, nothing else.
 """
@@ -300,7 +322,8 @@ def create_ambiguous_question(simple_name: str,
                 f"find the",
                 f"where is the",
                 f"locate the",
-                f"go to the"
+                f"go to the",
+                f"navigate to the"
             ]
         temp = random.choice(ambiguous_questions)
         if color:
@@ -308,29 +331,30 @@ def create_ambiguous_question(simple_name: str,
         else:
             return f"{temp} {simple_name}"
     
-def create_navigation_question(simple_name: str, 
-                                use_natural: bool = True) -> str:
-    if use_natural:
-        return get_natural_question_for_object(simple_name, None)
-    else:
-        navigation_questions = [
-            f"navigate to the {simple_name}",
-            f"go to the {simple_name}",
-            f"move to the {simple_name}",
-            f"approach the {simple_name}"
-        ]
-        return random.choice(navigation_questions)
+# def create_navigation_question(simple_name: str, 
+#                                 use_natural: bool = True) -> str:
+#     if use_natural:
+#         return get_natural_question_for_object(simple_name, None)
+#     else:
+#         navigation_questions = [
+#             f"navigate to the {simple_name}",
+#             f"go to the {simple_name}",
+#             f"move to the {simple_name}",
+#             f"approach the {simple_name}"
+#         ]
+#         return random.choice(navigation_questions)
 
 # TODO: Check get_similar_color_safe function
 def get_similar_color(ground_truth_color: str) -> str:
-    if ground_truth_color in COLOR_SIMILARITY_GROUPS:
-        similar_colors = COLOR_SIMILARITY_GROUPS[ground_truth_color]
-        return random.choice(similar_colors)
+    for color in COLOR_SIMILARITY_GROUPS:
+        if color in ground_truth_color.lower():
+            similar_colors = COLOR_SIMILARITY_GROUPS[color]
+            return random.choice(similar_colors)
     else:
         available_colors = [color for color in COLOR_OBJECTS if color != ground_truth_color]
         return random.choice(available_colors)
 
-def get_scanrefer_environment_info(scene_id: str, scanrefer_data: List[Dict]) -> str:
+def get_scanrefer_environment_info(scene_id: str, scanrefer_data) -> str:
     scene_objects = [obj for obj in scanrefer_data if obj['scene_id'] == scene_id]
     
     if not scene_objects:
@@ -346,8 +370,7 @@ def get_scanrefer_environment_info(scene_id: str, scanrefer_data: List[Dict]) ->
     if descriptions:
         env_info = f"Environment description for scene {scene_id}:\n" + "\n".join(descriptions)
     else:
-        env_info = f"No object descriptions found for scene {scene_id}."
-    
+        raise ValueError(f"No object descriptions found for scene {scene_id}.")
     return env_info
 
 
