@@ -7,7 +7,7 @@ import numpy as np
 import random
 from tqdm import tqdm
 
-FILTER_OBJECTS = ['wall', 'floor', 'ceiling', 'object']
+# FILTER_OBJECTS = ['wall', 'floor', 'ceiling', 'object']
 
 def parse_args(arg_list: Optional[List[str]] = None):
     """
@@ -55,7 +55,7 @@ def parse_args(arg_list: Optional[List[str]] = None):
     parser.add_argument(
         "-scanrefer_data_path", "--scanrefer_data_path",
         type=str,
-        default=None,
+        default="scanrefer/ScanRefer_filtered.json",
         help="ScanRefer data path"
     )
 
@@ -69,11 +69,17 @@ def parse_args(arg_list: Optional[List[str]] = None):
     parser.add_argument(
         "-scannet_data_path", "--scannet_data_path",
         type=str,
-        default="scannet_data/scans",
+        default="scannet_data",
         help="ScanNet data path"
     )
-
-
+    
+    parser.add_argument(
+        "-id", "--scene_id",
+        type=str,
+        nargs='+',
+        default=None,
+        help="Specific Scene ID to generate data on"
+    )
     
     args = parser.parse_args(arg_list)
     return args
@@ -89,32 +95,35 @@ def main(arg_list: Optional[List[str]] = None) -> None:
         print("Mode not specified")
         exit()
     elif args.mode == "cc":
-        if os.path.isdir(args.scannet_data_path):
-            files = os.listdir(args.scannet_data_path)
-            for f in files:
-                if not(os.path.isfile(f"{args.scannet_data_path}/{f}/{f}_vh_clean_2.ply") and os.path.isfile(f"{args.scannet_data_path}/{f}/{f}.aggregation.json") and os.path.isfile(f"{args.scannet_data_path}/{f}/{f}_vh_clean_2.0.010000.segs.json")):
-                    print(f"Required files for {f} not present, please download the required ScanNet data with 'sh download_scannet_data.sh' first.")
-                    continue
-                elif os.path.isfile(f"{args.scannet_data_path}/{f}/{f}_cc.aggregation.json"):
-                    print(f"Skipping {f}")
-                    continue
-                colors = get_object_colors_and_coordinates(f"{args.scannet_data_path}/{f}/{f}_vh_clean_2.ply", f"{args.scannet_data_path}/{f}/{f}.aggregation.json", f"{args.scannet_data_path}/{f}/{f}_vh_clean_2.0.010000.segs.json")
-                print(f"Loaded files for {f}...")
-                scene_objects = json.loads(open(f"{args.scannet_data_path}/{f}/{f}.aggregation.json").read())
-                scene_objects['segGroups'] = [{
-                    "id": obj["id"],
-                    "objectId": obj["objectId"],
-                    "segments": obj["segments"],
-                    "label": obj["label"],
-                    "color": colors[obj["id"]]["color"],
-                    "centroid": [float(x) for x in colors[obj["id"]]["centroid"]],
-                    "dimensions": [float(x) for x in colors[obj["id"]]["dimensions"]],
-                } for obj in scene_objects['segGroups'] if colors.get(obj["id"]) != None]
-                with open(f"{args.scannet_data_path}/{f}/{f}_cc.aggregation.json", "w") as f:
-                    json.dump(scene_objects, f, indent=4)
+        print("'cc' Mode deprecated")
+        exit()
 
-        else:
-            print(f"The folder '{args.scannet_data_path}' does not exist, please download the required ScanNet data with 'sh download_scannet_data.sh' first.")
+        # if os.path.isdir(args.scannet_data_path):
+        #     files = os.listdir(args.scannet_data_path)
+        #     for f in files:
+        #         if not(os.path.isfile(f"{args.scannet_data_path}/{f}/{f}_vh_clean_2.ply") and os.path.isfile(f"{args.scannet_data_path}/{f}/{f}.aggregation.json") and os.path.isfile(f"{args.scannet_data_path}/{f}/{f}_vh_clean_2.0.010000.segs.json")):
+        #             print(f"Required files for {f} not present, please download the required ScanNet data with 'sh download_scannet_data.sh' first.")
+        #             continue
+        #         elif os.path.isfile(f"{args.scannet_data_path}/{f}/{f}_cc.aggregation.json"):
+        #             print(f"Skipping {f}")
+        #             continue
+        #         colors = get_object_colors_and_coordinates(f"{args.scannet_data_path}/{f}/{f}_vh_clean_2.ply", f"{args.scannet_data_path}/{f}/{f}.aggregation.json", f"{args.scannet_data_path}/{f}/{f}_vh_clean_2.0.010000.segs.json")
+        #         print(f"Loaded files for {f}...")
+        #         scene_objects = json.loads(open(f"{args.scannet_data_path}/{f}/{f}.aggregation.json").read())
+        #         scene_objects['segGroups'] = [{
+        #             "id": obj["id"],
+        #             "objectId": obj["objectId"],
+        #             "segments": obj["segments"],
+        #             "label": obj["label"],
+        #             "color": colors[obj["id"]]["color"],
+        #             "centroid": [float(x) for x in colors[obj["id"]]["centroid"]],
+        #             "dimensions": [float(x) for x in colors[obj["id"]]["dimensions"]],
+        #         } for obj in scene_objects['segGroups'] if colors.get(obj["id"]) != None]
+        #         with open(f"{args.scannet_data_path}/{f}/{f}_cc.aggregation.json", "w") as f:
+        #             json.dump(scene_objects, f, indent=4)
+
+        # else:
+        #     print(f"The folder '{args.scannet_data_path}' does not exist, please download the required ScanNet data with 'sh download_scannet_data.sh' first.")
     
     elif args.mode == "ambiguity":
         if args.scanrefer_data_path:
@@ -126,17 +135,26 @@ def main(arg_list: Optional[List[str]] = None) -> None:
 
         if os.path.isdir(args.scannet_data_path):
             files = os.listdir(args.scannet_data_path)
+            if args.scene_id != None:
+                files = args.scene_id
             combined_data = []
             for f in tqdm(files):
-                if os.path.isfile(f"{args.scannet_data_path}/{f}/{f}_cc.aggregation.json"):
-                    data = json.loads(open(f"{args.scannet_data_path}/{f}/{f}_cc.aggregation.json").read())
+                # if os.path.isfile(f"{args.scannet_data_path}/{f}/{f}_cc.aggregation.json"):
+                #     data = json.loads(open(f"{args.scannet_data_path}/{f}/{f}_cc.aggregation.json").read())
+
+                    # # Environment
+                    # env_info, object_stats = get_env_info_and_stats(data['segGroups'])
+
+                if os.path.isfile(f"{args.scannet_data_path}/{f}/{f}_object_data.json"):
+                    data = json.loads(open(f"{args.scannet_data_path}/{f}/{f}_object_data.json").read())
+
                     # Environment
-                    env_info, object_stats = get_env_info_and_stats(data['segGroups'])
+                    env_info, object_stats = get_env_info_and_stats(data['0'])
 
                     # Referential Ambiguity
                     for object_name, object in object_stats.items():
-                        if object_name in FILTER_OBJECTS:
-                            continue
+                        # if object_name in FILTER_OBJECTS:
+                        #     continue
                         if len(object['id']) > 1:
                             dialogue = {
                                 "scene_id": f,
@@ -165,8 +183,8 @@ def main(arg_list: Optional[List[str]] = None) -> None:
                     objects = random.sample([object for object in object_stats], min(len(object_stats), args.samples_per_scene))
 
                     for object_name in objects:
-                        if object_name in FILTER_OBJECTS:
-                            continue
+                        # if object_name in FILTER_OBJECTS:
+                        #     continue
                         index = np.random.choice([i for i in range(len(object_stats[object_name]['id']))], 1)[0]
                         instance = object_stats[object_name]
                         id = instance['id'][index]
@@ -203,8 +221,8 @@ def main(arg_list: Optional[List[str]] = None) -> None:
                     objects = random.sample([object_name for object_name in object_stats], min(args.samples_per_scene, len(object_stats)))
 
                     for object_name in objects:
-                        if object_name in FILTER_OBJECTS:
-                            continue
+                        # if object_name in FILTER_OBJECTS:
+                        #     continue
                         index = np.random.choice([i for i in range(len(object_stats[object_name]['id']))], 1)[0]
                         instance = object_stats[object_name]
                         id = instance['id'][index]

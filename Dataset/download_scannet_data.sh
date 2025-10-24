@@ -2,12 +2,14 @@
 
 DIRECTORY="scannet_data"
 
-if [ -d "$DIRECTORY" ]; then
-  echo "Directory '$DIRECTORY' exists."
-else
-  mkdir scannet_data
-fi
+# Get IRef-VLA Scannet Data
+python download_dataset.py
+unzip Scannet.zip
+rm Scannet.zip
+mv "Scannet" $DIRECTORY
 
-python download-scannetv2.py -o scannet_data --type _vh_clean_2.ply --skip_existing
-python download-scannetv2.py -o scannet_data --type .aggregation.json --skip_existing
-python download-scannetv2.py -o scannet_data --type _vh_clean_2.0.010000.segs.json --skip_existing
+# Get ScanRefer Data
+gdown https://drive.google.com/uc?id=1x9PcZctaLLC79vF42ktl-bNRnixrKO15
+unzip scanrefer.zip
+rm scanrefer.zip
+rm -r __MACOSX

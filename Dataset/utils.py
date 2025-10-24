@@ -224,29 +224,59 @@ def get_object_colors_and_coordinates(ply_path, aggregation_path, segmentation_p
     
     return object_colors
 
+# def get_env_info_and_stats(data: dict) -> Tuple[str, dict]:
+#     object_stats = {}
+#     env_info = ""
+#     for obj in data:
+#         center = obj['centroid']
+#         size = obj['dimensions']
+#         size_desc = f"{size[0]:.2f} x {size[1]:.2f} x {size[2]:.2f}"
+#         env_info += f"{obj['label'].capitalize()}: "
+#         env_info += f"Center at ({center[0]:.2f}, {center[1]:.2f}, {center[2]:.2f}), "
+#         env_info += f"Size {size_desc}, Color {obj['color']}\n"
+        
+#         if obj in FILTER_OBJECTS or obj['color'] == "UNK":
+#             continue
+
+#         if object_stats.get(obj['label']):
+#             object_stats[obj['label']]['id'].append(obj['id'])
+#             object_stats[obj['label']]['color'].append(obj['color'])
+#             object_stats[obj['label']]['coordinates'].append(obj['centroid'])
+#         else:
+#             object_stats[obj['label']] = {
+#                     'id': [obj['id']],
+#                     'color': [obj['color']],
+#                     'coordinates': [obj['centroid']],
+#                 }
+    
+#     return env_info, object_stats
+
 def get_env_info_and_stats(data: dict) -> Tuple[str, dict]:
     object_stats = {}
     env_info = ""
-    for obj in data:
-        center = obj['centroid']
-        size = obj['dimensions']
+    for id in data:
+        obj = data[id]
+        center = obj['center']
+        size = obj['size']
         size_desc = f"{size[0]:.2f} x {size[1]:.2f} x {size[2]:.2f}"
-        env_info += f"{obj['label'].capitalize()}: "
+        env_info += f"{obj['raw_label'].capitalize()}: "
         env_info += f"Center at ({center[0]:.2f}, {center[1]:.2f}, {center[2]:.2f}), "
-        env_info += f"Size {size_desc}, Color {obj['color']}\n"
+        env_info += f"Size {size_desc}, Color {obj['color_labels'][0]}\n"
         
-        if obj in FILTER_OBJECTS or obj['color'] == "UNK":
+        if obj['nyu40_label'] in FILTER_OBJECTS or len([c for c in obj['color_labels'] if c != 'N/A']) == 0:
             continue
 
-        if object_stats.get(obj['label']):
-            object_stats[obj['label']]['id'].append(obj['id'])
-            object_stats[obj['label']]['color'].append(obj['color'])
-            object_stats[obj['label']]['coordinates'].append(obj['centroid'])
+        label = obj['raw_label']
+
+        if object_stats.get(label):
+            object_stats[label]['id'].append(id)
+            object_stats[label]['color'].append(obj['color_labels'][0])
+            object_stats[label]['coordinates'].append(obj['center'])
         else:
-            object_stats[obj['label']] = {
-                    'id': [obj['id']],
-                    'color': [obj['color']],
-                    'coordinates': [obj['centroid']],
+            object_stats[label] = {
+                    'id': [id],
+                    'color': [obj['color_labels'][0]],
+                    'coordinates': [obj['center']],
                 }
     
     return env_info, object_stats
