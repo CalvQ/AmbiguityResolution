@@ -326,11 +326,6 @@ def extract_object_counts_from_scannet(aggregation_data: Dict) -> Dict[str, int]
     
     return dict(object_counts)
 
-def simplify_object_name(object_name: str) -> str:
-    object_name = object_name.replace('_', ' ')
-    if object_name.endswith('s') and len(object_name) > 3:
-        return object_name[:-1]
-    return object_name
 
 def get_natural_question_for_object(object_name: str, color: str = None) -> str:
     SYSTEM_PROMPT = """
@@ -527,8 +522,7 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
     if existing_dataset_path is None and os.path.exists(output_path):
         existing_dataset_path = output_path
         # print(f"Output file {output_path} already exists, will use it to skip processed scenes")
-   f"Processing all {len(scanrefer_data)} ScanRefer data...")
-    
+
     dataset = [] 
     processed_scenes = set()
     positive_count = 0
@@ -540,29 +534,49 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
             exist_dataset = json.load(f)
 
     processed_triples = set()
+    already_processed_scenes = set()
     for item in exist_dataset:
         if 'scene_id' in item and 'object_id' in item and 'ambiguity_type' in item:
             processed_triples.add((item['scene_id'], item['object_id'], item['ambiguity_type']))
+            already_processed_scenes.add(item['scene_id'])
 
-    all_scenes = list(set([item['scene_id'] for item in scanrefer_data]))
-    if max_scenes is not None:
-        all_scenes = all_scenes[:max_scenes]
-
-    pbar = tqdm(total=len(all_scenes), desc="Processing scenes", unit="scene")
-    
+    all_available_scenes = []
+    seen_scenes = set()
     for item in scanrefer_data:
-        if max_scenes is not None and len(processed_scenes) >= max_scenes:
-            break
         scene_id = item['scene_id']
+        if scene_id not in seen_scenes:
+            all_available_scenes.append(scene_id)
+            seen_scenes.add(scene_id)
+    
+    new_scenes_to_process = [s for s in all_available_scenes if s not in already_processed_scenes]
+    new_scenes_to_process.sort()
+    
+    if max_scenes is not None:
+        new_scenes_to_process = new_scenes_to_process[:max_scenes]
+    
+    new_scenes_set = set(new_scenes_to_process)
+
+    pbar = tqdm(total=len(new_scenes_to_process), desc="Processing new scenes", unit="scene")
+    
+    new_scenes_processed = 0
+    for item in scanrefer_data:
+        scene_id = item['scene_id']
+        
+        if scene_id not in new_scenes_set:
+            continue
+        
+        if new_scenes_processed >= len(new_scenes_to_process):
+            break
         object_name = item['object_name']
         object_id = item['object_id']
         description = item['description']
 
         is_new_scene = scene_id not in processed_scenes
-        processed_scenes.add(scene_id)
         if is_new_scene:
+            new_scenes_processed += 1
             pbar.update(1)
             pbar.set_postfix({"current_scene": scene_id, "samples": len(dataset)})
+        processed_scenes.add(scene_id)
         if object_name.endswith('s'): # skip plural objects, because we could not distinguish them!!
             continue
 
@@ -606,6 +620,7 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
             
             dataset.append(dialogue)
             positive_count += 1
+            processed_triples.add((scene_id, object_id, 'no_ambiguity'))
             # print(f"Generated positive sample {positive_count}: {clear_question}")
         
         # ----------------------------NEGATIVE SAMPLES--------------------------------
@@ -648,6 +663,7 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
             
             dataset.append(dialogue)
             negative_count += 1
+            processed_triples.add((scene_id, object_id, 'multiple_objects'))
             # print(f"Generated negative sample {negative_count} (multiple objects): {ambiguous_question}")
         
         # ----------------------------MISSING OBJECT AMBIGUITY--------------------------------
@@ -681,6 +697,7 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
             
             dataset.append(dialogue)
             negative_count += 1
+            processed_triples.add((scene_id, object_id, 'nonexistent_object'))
             # print(f"Generated negative sample {negative_count} (nonexistent object): {navigation_question}")
 
         # ----------------------------COLOR AMBIGUITY--------------------------------
@@ -711,6 +728,7 @@ def construct_ambiguity_dataset(scanrefer_path: str, scannet_path: str, output_p
                 }
                 dataset.append(dialogue)
                 negative_count += 1
+                processed_triples.add((scene_id, object_id, 'color_ambiguity'))
                 # print(f"Generated negative sample {negative_count} (color ambiguity): {alternative_question}")
         
         processed_scenes.add(scene_id)
@@ -763,7 +781,7 @@ def main():
     construct_ambiguity_dataset(scanrefer_path, 
                                 scannet_path,
                                 output_path,
-                                max_scenes=20,
+                                max_scenes=None,
                                 max_samples=None,
                                 generate_natural=False)
 
