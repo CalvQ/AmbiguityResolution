@@ -80,9 +80,6 @@ def parse_args(arg_list: Optional[List[str]] = None):
 
 
 def main(arg_list: Optional[List[str]] = None) -> None:
-    """
-    
-    """
     args = parse_args(arg_list)
 
     if args.mode == "":
@@ -115,7 +112,7 @@ def main(arg_list: Optional[List[str]] = None) -> None:
 
         else:
             print(f"The folder '{args.scannet_data_path}' does not exist, please download the required ScanNet data with 'sh download_scannet_data.sh' first.")
-    
+
     elif args.mode == "ambiguity":
         if args.scanrefer_data_path:
             try:
@@ -126,12 +123,43 @@ def main(arg_list: Optional[List[str]] = None) -> None:
 
         if os.path.isdir(args.scannet_data_path):
             files = os.listdir(args.scannet_data_path)
+            files.sort()
             combined_data = []
             for f in tqdm(files):
                 if os.path.isfile(f"{args.scannet_data_path}/{f}/{f}_cc.aggregation.json"):
                     data = json.loads(open(f"{args.scannet_data_path}/{f}/{f}_cc.aggregation.json").read())
                     # Environment
                     env_info, object_stats = get_env_info_and_stats(data['segGroups'])
+
+                    # Non-Ambiguity
+                    non_multi_objects = [object_name for object_name, object in object_stats.items() if len(object['id']) == 1]
+                    non_multi_objects = random.sample(non_multi_objects, min(args.samples_per_scene, len(non_multi_objects)))
+                    for object_name in non_multi_objects:
+                        if object_name in FILTER_OBJECTS:
+                            continue
+                        dialogue = {
+                            "scene_id": f,
+                            "object_name": object_name,
+                            "object_id": object_stats[object_name]['id'][0],
+                            "original_description": "", # TODO
+                                "environment_info": env_info,
+                                "sample_type": "positive",
+                                "ambiguity_type": "no_ambiguity",
+                                "natural": args.use_natural,
+                                "dialogue": [
+                                    {
+                                        "speaker": "User",
+                                        "text": create_ambiguous_question(object_name, use_natural=args.use_natural)
+                                    },
+                                ]
+                            }
+
+                        combined_data.append(dialogue)
+                        if len(combined_data) >= args.total_sample_limit:
+                            break
+                    if len(combined_data) >= args.total_sample_limit:
+                        break
+
 
                     # Referential Ambiguity
                     for object_name, object in object_stats.items():

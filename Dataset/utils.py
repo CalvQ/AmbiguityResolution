@@ -8,10 +8,10 @@ from typing import List, Optional, Any, Tuple
 import os
 import openai
 
-os.environ['OPENAI_API_KEY'] = 'sk-zwFJ4FnnbyCE3JxIidJm8Q'
+os.environ['OPENAI_API_KEY'] = 'YOUR_OPENAI_API_KEY'
 
 client = openai.OpenAI(
-    api_key='sk-zwFJ4FnnbyCE3JxIidJm8Q',
+    api_key='YOUR_OPENAI_API_KEY',
     base_url="https://ai-gateway.andrew.cmu.edu/"
 )
 
@@ -266,9 +266,9 @@ def get_response(prompt, model="gpt-4.1-mini", system_prompt=None):
     
     return answer
 
-def get_natural_question_for_object(object_name: str, color: str = None) -> str:
+def _generate_raw_natural_question(object_name: str, color: str = None) -> str:
     SYSTEM_PROMPT = """
-You are generating natural, human-like questions that people would ask when they need to interact with or find an object.
+You are generating natural, human-like questions that people are likely to ask a robot for help, when they need to interact with or find an object in a scene.
 The questions should:
 1. Be based on the object's FUNCTION and simulate real human needs, NOT A NAIVE QUESTION LIKE "where is ..." or "go to ...".
 2. Simulate real conversations between humans and robots. 
@@ -283,22 +283,32 @@ So, when given the object "shelf", you can generate "I want to get something fro
 9. The generated question only mentions the object given, NOT ANY OTHER OBJECTS.
 For exmaple, if the given object is "cabinet", the question cannot be "Can you open the silver cabinet to get my files?" because "files" is not a given object.
 It should be "Can you open the silver cabinet to "
+10. DO NOT LET the robot do very fine-grained tasks. Assume the robot is just a navigation robot that can only perform simple fetching / navigation / seeing.
+e.g. NOT ASK THE ROBOT TO "writing/typing".
+11. Use diverse linguistic patterns. Try natural forms such as:
+- "Can you ..."
+- "I want to ..."
+- "It would be nice to ..."
+- "Maybe I should ..."
+- "I feel like ..."
+- "Looks like I need ..."
+- "Where should I go to ..."
 
-Examples WITHOUT color:
+Good Examples:
 - soap dispenser → "I want to wash my hands with the soap dispenser"
 - chair → "I'm tired, I need to sit down on the chair"
 - lamp → "It's too dark here, turn on the lamp"
 - trash can → "I want to throw away the trash" / "I need to dispose of the trash"
 - microwave → "I want to heat the food up with the microwave"
 - bed → "I'm exhausted, I need to lie down"
-- refrigerator → "I'm thirsty, get me something cold to drink from the refrigerator"
+- fridge → "It's probably time to grab a drink from the fridge."
 - window → "I need fresh air"
-
-Examples WITH color:
 - blue chair → "I'm tired, I want to sit on the blue chair."
 - red lamp → "It's dark, turn on the red light"
+- red mug → "Looks like I need the red mug for my coffee."
 - green bottle → "I'm thirsty, pass me the green bottle"
 - brown guitar → "Let's practice the guitar."
+- cabinet → "Can you open the cabinet for me to get my files?"
 
 Generate ONE natural question for the given object. Only output the question, nothing else.
 """
@@ -312,38 +322,59 @@ Generate ONE natural question for the given object. Only output the question, no
     question = answer.strip().strip('"').strip("'")
     return question
 
+def _validate_natural_question(object_name: str, color: str, generated_question: str) -> str:
+    SYSTEM_PROMPT = """
+You are classifying the validity of a robot interaction question. 
+The original question was generated automatically, but it might contain irrelevant objects or unnatural phrasing. 
+Your job is first CLASSIFY THE QUESTION AS VALID OR INVALID based on the following criteria:
+1. It ask the robot to navigate to the given object (and optionally its color), NOT any other object.
+2. It sounds natural and human-like — something a real person might say when asking a simple navigation robot for help.
+3. The question expected the robot is simple: it can navigate or fetch, but not do fine-grained actions (no “write”, “cook”, “fix”, etc.)
+Output valid or invalid, nothing else.
+"""
+    print("--original question--", generated_question)
+    USER_PROMPT = f"Target object: {color + ' ' if color else ''}{object_name}\nGenerated question: '{generated_question}'"
+    answer = get_response(USER_PROMPT, system_prompt=SYSTEM_PROMPT).lower()
+    print("--validity answer--", answer)
+    if "valid" in answer and "invalid" not in answer:
+        return generated_question
+    if "invalid" in answer:
+        return ""
+    return generated_question
+
+def get_natural_question_for_object(object_name: str, color: str = None) -> str:
+    # TODO: add validation
+    raw_question = _generate_raw_natural_question(object_name, color)
+    return raw_question
+    # validated_question = _validate_natural_question(object_name, color, raw_question)
+    # if validated_question == "":
+    #     return -1
+    # return validated_question
+
+def _generate_navigation_question(simple_name: str, color: str = None) -> str:
+    ambiguous_questions = [
+        f"find the",
+        f"where is the",
+        f"locate the",
+        f"go to the",
+        f"navigate to the"
+    ]
+    temp = random.choice(ambiguous_questions)
+    if color:
+        return f"{temp} {color} {simple_name}"
+    else:
+        return f"{temp} {simple_name}"
+
 def create_ambiguous_question(simple_name: str, 
                                 color: str = None, 
                                 use_natural: bool = True) -> str:
     if use_natural:
-        return get_natural_question_for_object(simple_name, color)
+        question = get_natural_question_for_object(simple_name, color)
+        if question == -1:
+            return _generate_navigation_question(simple_name, color)
+        return question
     else:
-        ambiguous_questions = [
-                f"find the",
-                f"where is the",
-                f"locate the",
-                f"go to the",
-                f"navigate to the"
-            ]
-        temp = random.choice(ambiguous_questions)
-        if color:
-            return f"{temp} {color} {simple_name}"
-        else:
-            return f"{temp} {simple_name}"
-    
-# def create_navigation_question(simple_name: str, 
-#                                 use_natural: bool = True) -> str:
-#     if use_natural:
-#         return get_natural_question_for_object(simple_name, None)
-#     else:
-#         navigation_questions = [
-#             f"navigate to the {simple_name}",
-#             f"go to the {simple_name}",
-#             f"move to the {simple_name}",
-#             f"approach the {simple_name}"
-#         ]
-#         return random.choice(navigation_questions)
-
+        return _generate_navigation_question(simple_name, color)
 # TODO: Check get_similar_color_safe function
 def get_similar_color(ground_truth_color: str) -> str:
     for color in COLOR_SIMILARITY_GROUPS:
