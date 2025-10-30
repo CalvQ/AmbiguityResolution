@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Dataset.utils import get_scanrefer_environment_info
 from AREngine.arengine import AREngine
 
-os.environ['OPENAI_API_KEY'] = "YOUR_OPENAI_API_KEY"
+os.environ['OPENAI_API_KEY'] = 'YOUR_OPENAI_API_KEY'
 import os
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -25,12 +25,15 @@ def get_response(messages_list, model="gpt-4.1-mini", system_prompt=None):
         {"role": "system", "content": system_prompt},
     ]
     messages.extend(messages_list)
+    # print('='*40, 'MESSAGES', '='*40)
+    # print(messages)
     response = client.chat.completions.create(
             model= model,
             messages = messages
     )
     answer = response.choices[0].message.content
-    
+    # print('='*40, 'ANSWER', '='*40)
+    # print(answer)
     return answer
 
 
@@ -53,6 +56,8 @@ class HumanAgent:
         print('target_object_name: ', target_object_name)
         print('scene_id: ', scene_id)
         print("description_of_object: ", description_of_object)
+        print("gt_ambiguity: ", gt_ambiguity)
+        print("color_prompt: ", color_prompt)
 
         gt_ambiguity_prompt = {
             "no_ambiguity": ["clear and without any ambiguity", 
@@ -68,13 +73,13 @@ class HumanAgent:
                                     "Therefore", 
                                     "and tell the robot the real object you are referring to"]
         }
-        self.system_prompt = """
+        self.system_prompt = f"""
         You are a human in a scene, helping a robot to find your target object. You have already made a query to one robot. Your original request is: {original_query}
         That query was {gt_ambiguity_prompt[gt_ambiguity][0]}.
         {gt_ambiguity_prompt[gt_ambiguity][1]} the robot may be difficult to understand your request, or think your request is ambiguous.
         You need to help the robot understand your request, {gt_ambiguity_prompt[gt_ambiguity][2]}.
         - The TARGET OBJECT you are referring to is: {target_object_name}
-        {color_prompt}
+        {color_prompt or ""}
         - The DESCRIPTION of your target object is: {description_of_object}
         
         You will be given a response from the robot, and you need to help the robot understand your request, and provide a more specific request, e.g. provide the description of your target object.
@@ -121,13 +126,14 @@ if __name__ == '__main__':
                             target_object_id = q['object_id'],
                             target_object_name = q['object_name'],
                             scene_id = q['scene_id'],
-                            gt_ambiguity = q['ambiguity_type'] )
+                            gt_ambiguity = q['ambiguity_type'],
+                            color_prompt = color_prompt)
         except:
             continue # TODO: WHAT IF NOT IN THE SCANREFER DATASET? USE THE SCANNET INFO.
 
         
-        
-        engine.set_scene(q['scene_id'])
+        scene = {"environment_info": q['environment_info']}
+        engine.set_scene(scene)
         
         RESOLVED_FLAG = False
         robot_history = []
@@ -144,7 +150,7 @@ if __name__ == '__main__':
                 })
                 human_response = ha.get_human_response(robot_response)
                 current_prompt = human_response
-                print('*'*20, 'turn', count, '*'*20)
+                print('-'*20, 'Round', count, '-'*20)
                 print('\n[Robot Clarification]: ', robot_response)
                 print('\n[Human Response]: ', human_response)
             else:
