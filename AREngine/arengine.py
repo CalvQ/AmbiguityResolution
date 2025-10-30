@@ -16,10 +16,10 @@ class AREngine:
     def load_model(self):
         self.model, self.tokenizer = load_llm.load_mlx_mistral_7b()
         
-    def set_scene(self, scene):
+    def set_scene(self, scene: dict):
         self.scene = scene
         
-    def _build_prompt(self, user_prompt, scene):
+    def _build_prompt(self, user_prompt: str, scene: dict):
         """
         Build a chat-formatted prompt that starts with a USER turn.
         We fold the 'system' guidance into the first user message to satisfy
@@ -301,6 +301,7 @@ class AREngine:
                 break
         
         # Ensure it ends with a question mark
+        question = question.strip("'")
         if not question.endswith("?"):
             question += "?"
         
