@@ -89,4 +89,4 @@ if __name__ == "__main__":
     import sys
     in_path = sys.argv[1] if len(sys.argv) > 1 else "ambiguity_dataset_demo_10.json"
     out_path = sys.argv[2] if len(sys.argv) > 2 else "output.csv"
-    evaluate_json_file(in_path, out_csv=out_path, limit=None)
+    evaluate_json_file(in_path, out_csv=out_path, limit=2)

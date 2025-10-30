@@ -11,7 +11,7 @@ import openai
 os.environ['OPENAI_API_KEY'] = 'YOUR_OPENAI_API_KEY'
 
 client = openai.OpenAI(
-    api_key='YOUR_OPENAI_API_KEY',
+    api_key=os.environ['OPENAI_API_KEY'],
     base_url="https://ai-gateway.andrew.cmu.edu/"
 )
 
@@ -395,6 +395,8 @@ def get_scanrefer_environment_info(scene_id: str, scanrefer_data) -> str:
     
     for obj in scene_objects:
         object_name = obj['object_name']
+        if object_name in FILTER_OBJECTS:
+            continue
         description = obj['description']
         descriptions.append(f"- {object_name}: {description}")
     
