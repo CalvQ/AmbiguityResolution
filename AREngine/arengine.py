@@ -45,7 +45,9 @@ class AREngine:
 
         try:
             return self.tokenizer.apply_chat_template(
-                messages, add_generation_prompt=True
+                messages, 
+                tokenize=False,
+                add_generation_prompt=True
             )
         except Exception:
             # Fallback to raw text if the model lacks a chat_template
@@ -144,7 +146,9 @@ class AREngine:
         
         try:
             return self.tokenizer.apply_chat_template(
-                messages, add_generation_prompt=True
+                messages, 
+                tokenize=False,
+                add_generation_prompt=True
             )
         except Exception:
             return messages[0]["content"]
@@ -212,7 +216,9 @@ class AREngine:
         
         try:
             return self.tokenizer.apply_chat_template(
-                messages, add_generation_prompt=True
+                messages, 
+                tokenize=False,
+                add_generation_prompt=True
             )
         except Exception:
             return messages[0]["content"]
