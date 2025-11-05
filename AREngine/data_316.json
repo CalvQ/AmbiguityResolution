@@ -1,0 +1,366 @@
+[
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "armchair",
+    "object_id": 2,
+    "original_description": "",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "positive",
+    "ambiguity_type": "no_ambiguity",
+    "natural": true,
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "I feel like sitting down and relaxing on the armchair."
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "chair",
+    "object_id": 5,
+    "original_description": "",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "positive",
+    "ambiguity_type": "no_ambiguity",
+    "natural": true,
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "I feel like sitting down on the chair for a while."
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "door",
+    "object_id": 10,
+    "original_description": "",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "positive",
+    "ambiguity_type": "no_ambiguity",
+    "natural": true,
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "Can you open the door so I can go through?"
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "doorframe",
+    "object_id": 11,
+    "original_description": "",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "positive",
+    "ambiguity_type": "no_ambiguity",
+    "natural": true,
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "I need to walk through the doorframe to enter the next room."
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "table",
+    "object_id": 7,
+    "original_description": "",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "positive",
+    "ambiguity_type": "no_ambiguity",
+    "natural": true,
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "I want to place my things on the table for a while."
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "ottoman",
+    "object_id": 6,
+    "original_description": "",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "negative",
+    "ambiguity_type": "multiple_objects",
+    "natural": true,
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "I want to rest my feet on the ottoman."
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "water fountain",
+    "object_id": 14,
+    "original_description": "",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "negative",
+    "ambiguity_type": "multiple_objects",
+    "natural": true,
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "I feel like getting a drink from the water fountain."
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "doorframe",
+    "object_id": 11,
+    "original_description": "",
+    "ground_truth_color": "darkslategray",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "negative",
+    "ambiguity_type": "color_ambiguity",
+    "alternative_color": "silver",
+    "natural": true,
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "Can you take me through the silver doorframe?"
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "door",
+    "object_id": 10,
+    "original_description": "",
+    "ground_truth_color": "silver",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "negative",
+    "ambiguity_type": "color_ambiguity",
+    "alternative_color": "white",
+    "natural": true,
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "Can you open the white door so I can go through?"
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "table",
+    "object_id": 7,
+    "original_description": "",
+    "ground_truth_color": "mintcream",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "negative",
+    "ambiguity_type": "color_ambiguity",
+    "alternative_color": "green",
+    "natural": true,
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "I want to put my things on the green table."
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "chair",
+    "object_id": 5,
+    "original_description": "",
+    "ground_truth_color": "black",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "negative",
+    "ambiguity_type": "color_ambiguity",
+    "alternative_color": "purple",
+    "natural": true,
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "I want to sit down on the purple chair to rest."
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "armchair",
+    "object_id": 2,
+    "original_description": "",
+    "ground_truth_color": "saddlebrown",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "negative",
+    "ambiguity_type": "color_ambiguity",
+    "alternative_color": "orange",
+    "natural": true,
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "I feel like relaxing, can you guide me to the orange armchair?"
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "ottoman",
+    "object_id": 6,
+    "original_description": "",
+    "ground_truth_color": "peru",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "negative",
+    "ambiguity_type": "color_ambiguity",
+    "alternative_color": "yellow",
+    "natural": true,
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "I want to rest my feet on the yellow ottoman."
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "water fountain",
+    "object_id": 14,
+    "original_description": "",
+    "ground_truth_color": "darkslategray",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "negative",
+    "ambiguity_type": "color_ambiguity",
+    "alternative_color": "silver",
+    "natural": true,
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "I feel like getting a drink from the silver water fountain."
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "table",
+    "object_id": 7,
+    "original_description": "",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "negative",
+    "ambiguity_type": "nonexistent_object",
+    "natural": true,
+    "alternative_object": "coffee cart",
+    "reason": "A coffee cart is similar in function to a table as a surface to hold items, but it is typically mobile and found in different environments like offices or cafes rather than a stationary table in a living room corner, causing ambiguity between a stationary table and a movable service cart.",
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "I feel like getting a coffee from the coffee cart."
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "armchair",
+    "object_id": 2,
+    "original_description": "",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "negative",
+    "ambiguity_type": "nonexistent_object",
+    "natural": true,
+    "alternative_object": "recliner",
+    "reason": "A recliner is a type of upholstered chair designed for comfort like an armchair, often with armrests, and can be confused as an armchair; however, recliners are typically found in more private living or lounge spaces rather than the described communal or public room environment.",
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "I want to relax, can you guide me to the recliner?"
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "doorframe",
+    "object_id": 11,
+    "original_description": "",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "negative",
+    "ambiguity_type": "nonexistent_object",
+    "natural": true,
+    "alternative_object": "window frame",
+    "reason": "A window frame is a structural frame similar to a doorframe and can be confused as such, but it is part of a window, a different architectural element not mentioned in the environment.",
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "I want to open the window frame for some fresh air."
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "ottoman",
+    "object_id": 3,
+    "original_description": "",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "negative",
+    "ambiguity_type": "nonexistent_object",
+    "natural": true,
+    "alternative_object": "pouf",
+    "reason": "A pouf is a type of low, cushioned seat similar to an ottoman, often used for resting feet or extra seating, but it is typically softer and more fabric-based than leather ottomans. It could be confused as an ottoman, yet poufs are generally found in more casual or bohemian spaces rather than the formal seating area described here.",
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "I want to rest my feet on the pouf for a while."
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "water fountain",
+    "object_id": 14,
+    "original_description": "",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "negative",
+    "ambiguity_type": "nonexistent_object",
+    "natural": true,
+    "alternative_object": "drinking tap",
+    "reason": "A drinking tap also dispenses water like a water fountain and is often mounted on a wall, making it possible to confuse the two, especially in a setting where a water fountain is expected but a simpler tap is present instead.",
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "I want to fill my bottle from the drinking tap."
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "chair",
+    "object_id": 5,
+    "original_description": "",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "negative",
+    "ambiguity_type": "nonexistent_object",
+    "natural": true,
+    "alternative_object": "stool",
+    "reason": "A stool is a seat like a chair and can be confused as a chair, but it typically lacks a backrest or armrests and is not usually found in the same formal seating arrangement as chairs in this environment.",
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "I feel like resting my feet on the stool."
+      }
+    ]
+  },
+  {
+    "scene_id": "scene0316_00",
+    "object_name": "door",
+    "object_id": 10,
+    "original_description": "",
+    "environment_info": "Wall: Center at (3.66, 3.09, 0.63), Size 0.37 x 1.50 x 1.40, Color ['silver', 'lightgray', 'darkgray']\nWall: Center at (3.10, 0.47, 0.51), Size 4.70 x 0.97 x 1.22, Color ['maroon', 'saddlebrown', 'sienna']\nArmchair: Center at (0.88, 1.46, 0.48), Size 0.91 x 0.98 x 0.75, Color ['saddlebrown', 'sienna', 'maroon']\nOttoman: Center at (1.69, 0.75, 0.40), Size 0.93 x 0.92 x 0.44, Color ['sienna', 'saddlebrown', 'darkolivegreen']\nFloor: Center at (2.98, 2.08, 0.03), Size 5.52 x 3.63 x 0.12, Color ['sienna', 'saddlebrown', 'darkslategray']\nChair: Center at (3.27, 3.44, 0.56), Size 0.53 x 0.60 x 0.41, Color ['black', 'sienna', 'darkslategray']\nOttoman: Center at (2.51, 0.92, 0.40), Size 0.95 x 0.92 x 0.44, Color ['peru', 'sienna', 'black']\nTable: Center at (0.97, 0.54, 0.48), Size 0.54 x 0.70 x 0.66, Color ['mintcream', 'darkolivegreen', 'sienna']\nObject: Center at (0.92, 0.49, 0.85), Size 0.25 x 0.21 x 0.31, Color ['gray', 'dimgray', 'silver']\nWall: Center at (0.36, 1.52, 0.72), Size 0.85 x 3.47 x 1.14, Color ['darkslategray', 'silver', 'lightgray']\nDoor: Center at (0.17, 2.59, 0.62), Size 0.29 x 1.27 x 1.03, Color ['silver', 'darkgray', 'lightgray']\nDoorframe: Center at (0.16, 2.41, 0.48), Size 0.32 x 1.58 x 0.95, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWall: Center at (0.41, 3.52, 0.75), Size 0.82 x 0.19 x 0.60, Color ['darkolivegreen', 'darkslategray', 'dimgray']\nWall: Center at (2.37, 3.57, 0.80), Size 2.43 x 0.61 x 1.44, Color ['silver', 'lightgray', 'darkgray']\nWater fountain: Center at (2.16, 3.28, 0.83), Size 0.58 x 0.53 x 0.59, Color ['darkslategray', 'darkolivegreen', 'dimgray']\nWater fountain: Center at (2.57, 3.47, 0.88), Size 0.57 x 0.56 x 1.06, Color ['dimgray', 'darkolivegreen', 'gray']\n",
+    "sample_type": "negative",
+    "ambiguity_type": "nonexistent_object",
+    "natural": true,
+    "alternative_object": "gate",
+    "reason": "A gate is functionally similar to a door as a passage barrier, but it is typically found outdoors or in fences, not inside a room, which creates ambiguity when identifying a door in an indoor environment.",
+    "dialogue": [
+      {
+        "speaker": "User",
+        "text": "Can you open the gate so I can go outside?"
+      }
+    ]
+  }
+]
