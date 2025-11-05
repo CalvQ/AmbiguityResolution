@@ -1,10 +1,6 @@
 import load_llm
 import random
-
-from mlx_lm.generate import generate_step, generate
-from mlx_lm.sample_utils import make_sampler
 import json
-import mlx.core as mx
 import re
 
 class AREngine:
@@ -14,7 +10,7 @@ class AREngine:
         self.scene = None
         
     def load_model(self):
-        self.model, self.tokenizer = load_llm.load_mlx_mistral_7b()
+        self.model, self.tokenizer = load_llm.load_qwen3_30b()
         
     def set_scene(self, scene):
         self.scene = scene
@@ -58,13 +54,18 @@ class AREngine:
     def is_prompt_ambiguous(self, prompt, scene = None):
         prompt_str = self._build_prompt(prompt, scene)
         
-        text = generate(
-            self.model,
-            self.tokenizer,
-            prompt=prompt_str,
-            max_tokens=8,
-            verbose=False,
+        # Tokenize the prompt
+        model_inputs = self.tokenizer([prompt_str], return_tensors="pt").to(self.model.device)
+        
+        # Generate response
+        generated_ids = self.model.generate(
+            **model_inputs,
+            max_new_tokens=8,
         )
+        
+        # Decode only the new tokens (skip the prompt)
+        output_ids = generated_ids[0][len(model_inputs.input_ids[0]):].tolist()
+        text = self.tokenizer.decode(output_ids, skip_special_tokens=True)
         
         first = re.sub(r"[\\s\\W]+$", "", str(text).strip().lower())  # strip punctuation
         if first.startswith("true"):
@@ -233,13 +234,18 @@ class AREngine:
             user_response, history, clarifying_question
         )
         
-        contextualized = generate(
-            self.model,
-            self.tokenizer,
-            prompt=context_prompt,
-            max_tokens=75,
-            verbose=False,
+        # Tokenize the prompt
+        model_inputs = self.tokenizer([context_prompt], return_tensors="pt").to(self.model.device)
+        
+        # Generate response
+        generated_ids = self.model.generate(
+            **model_inputs,
+            max_new_tokens=75,
         )
+        
+        # Decode only the new tokens (skip the prompt)
+        output_ids = generated_ids[0][len(model_inputs.input_ids[0]):].tolist()
+        contextualized = self.tokenizer.decode(output_ids, skip_special_tokens=True)
         
         # Clean up the response
         contextualized = contextualized.strip()
@@ -275,14 +281,18 @@ class AREngine:
         # Build the clarification prompt
         clarification_prompt = self._build_clarification_prompt(prompt, history)
         
+        # Tokenize the prompt
+        model_inputs = self.tokenizer([clarification_prompt], return_tensors="pt").to(self.model.device)
+        
         # Generate the clarifying question
-        question = generate(
-            self.model,
-            self.tokenizer,
-            prompt=clarification_prompt,
-            max_tokens=75,
-            verbose=False,
+        generated_ids = self.model.generate(
+            **model_inputs,
+            max_new_tokens=75,
         )
+        
+        # Decode only the new tokens (skip the prompt)
+        output_ids = generated_ids[0][len(model_inputs.input_ids[0]):].tolist()
+        question = self.tokenizer.decode(output_ids, skip_special_tokens=True)
         
         # Clean up the generated question
         question = question.strip()
