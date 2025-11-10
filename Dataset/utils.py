@@ -449,12 +449,15 @@ Follow the rules below:
    because it does not create genuine ambiguity. 
    Only generate objects that people could realistically confuse with the given object. 
 3. Generate ambiguous alternative object that DO NOT EXIST in the environment. 
-   DO NOT replace the object with one other object that is ALREAY IN the environment. 
+   DO NOT replace the object with one other object that is ALREADY IN the environment. 
+4. The alternative object should NOT be a substring of any of the objects in the environment and the objects in the environments should not be a substring of the alternative object.
 
 Examples:
 Negative Examples (invalid, not ambiguous):
 - Object: table → Alternative: "desk"  
-  Reason: Desk and table are distinct enough that they do not create confusion in this context. 
+  Reason: Desk and table are not distinct enough that they do not create confusion in this context. 
+- Object: microwave → Alternative: "microwave oven"  
+  Reason: The alternative microwave oven contains the original answer, microwave as a substring. 
 
 Positive Examples (valid ambiguous questions):
 - Object: chair → Alternative: "stool"  

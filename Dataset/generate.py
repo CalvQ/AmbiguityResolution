@@ -95,9 +95,6 @@ def main(arg_list: Optional[List[str]] = None) -> None:
         print("'cc' Mode deprecated")
         exit()
 
-        else:
-            print(f"The folder '{args.scannet_data_path}' does not exist, please download the required ScanNet data with 'sh download_scannet_data.sh' first.")
-
     elif args.mode == "ambiguity":
         if args.scanrefer_data_path:
             try:
@@ -113,11 +110,6 @@ def main(arg_list: Optional[List[str]] = None) -> None:
                 files = args.scene_id
             combined_data = []
             for f in tqdm(files):
-                # if os.path.isfile(f"{args.scannet_data_path}/{f}/{f}_cc.aggregation.json"):
-                #     data = json.loads(open(f"{args.scannet_data_path}/{f}/{f}_cc.aggregation.json").read())
-
-                    # # Environment
-                    # env_info, object_stats = get_env_info_and_stats(data['segGroups'])
 
                 if os.path.isfile(f"{args.scannet_data_path}/{f}/{f}_object_data.json"):
                     data = json.loads(open(f"{args.scannet_data_path}/{f}/{f}_object_data.json").read())
@@ -129,8 +121,8 @@ def main(arg_list: Optional[List[str]] = None) -> None:
                     non_multi_objects = [object_name for object_name, object in object_stats.items() if len(object['id']) == 1]
                     non_multi_objects = random.sample(non_multi_objects, min(args.samples_per_scene, len(non_multi_objects)))
                     for object_name in non_multi_objects:
-                        if object_name in FILTER_OBJECTS:
-                            continue
+                        # if object_name in FILTER_OBJECTS:
+                        #     continue
                         dialogue = {
                             "scene_id": f,
                             "object_name": object_name,
@@ -183,7 +175,7 @@ def main(arg_list: Optional[List[str]] = None) -> None:
                     if len(combined_data) >= args.total_sample_limit:
                         break
 
-                    # Missing Object Ambiguity
+                    # Missing Attribute Ambiguity
                     objects = random.sample([object for object in object_stats], min(len(object_stats), args.samples_per_scene))
 
                     for object_name in objects:
@@ -221,8 +213,10 @@ def main(arg_list: Optional[List[str]] = None) -> None:
                     if len(combined_data) >= args.total_sample_limit:
                         break
 
-                    # Missing Attribute Ambiguity
+                    # Missing Object Ambiguity
                     objects = random.sample([object_name for object_name in object_stats], min(args.samples_per_scene, len(object_stats)))
+
+                    env_objects = [obj.lower().replace(' ', '') for obj in object_stats]
 
                     for object_name in objects:
                         # if object_name in FILTER_OBJECTS:
@@ -237,6 +231,11 @@ def main(arg_list: Optional[List[str]] = None) -> None:
                         else:
                             alternative_object_json = create_nonexistent_objects(object_name, env_info)
                         alternative_object = alternative_object_json['alternative']
+
+                        # Check for substring matches
+                        if any([alternative_object in obj for obj in env_objects]) or any([obj in alternative_object for obj in env_objects]):
+                            continue
+
                         reason = alternative_object_json['reason']
                         
                         dialogue = {
