@@ -1,2 +1,5 @@
 scannet_data
+scanrefer
 __pycache__/
+*.zip
+*.json
