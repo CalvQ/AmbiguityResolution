@@ -1,24 +1,25 @@
 #!/usr/bin/env python3
 """
-Standalone evaluation script for AREngine ambiguity detection.
-Does not require scene_parser - uses raw environment_info.
+Evaluation script for AREngine ambiguity detection.
 
 Usage:
-    python eval_dataset_simple.py <dataset.json> [output.csv] [limit]
+    python eval_dataset.py <dataset.json> [output.csv] [--limit N]
     
 Example:
-    python eval_dataset_simple.py data.json results.csv 100
+    python eval_dataset.py data.json results.csv --limit 100
 """
 
 import json
 import csv
 from pathlib import Path
 from tqdm.auto import tqdm
+import sys
 
 from arengine import AREngine
+from scene_parser import parse_environment_info
 
 
-def evaluate_json_file(json_path, out_csv="results.csv", limit=None):
+def evaluate_json_file(json_path, out_csv="results.csv", limit=None, verbose=False):
     """
     Evaluate AREngine ambiguity detection on a dataset.
     
@@ -26,6 +27,7 @@ def evaluate_json_file(json_path, out_csv="results.csv", limit=None):
         json_path (str): Path to JSON dataset
         out_csv (str): Output CSV path for detailed results
         limit (int): Optional limit on number of samples to evaluate
+        verbose (bool): Print individual predictions
     """
     data = json.loads(Path(json_path).read_text())
     
@@ -57,7 +59,16 @@ def evaluate_json_file(json_path, out_csv="results.csv", limit=None):
     n_positive_correct = 0  # correctly identified as ambiguous
     n_negative_correct = 0  # correctly identified as not ambiguous
 
-    for item in tqdm(items, desc="Evaluating", unit="scene"):
+    for i, item in enumerate(
+        tqdm(
+            items,
+            total=total,
+            desc="Evaluating",
+            unit="scene",
+            dynamic_ncols=True,
+            disable=verbose,  # Disable progress bar in verbose mode
+        )
+    ):
         scene_id = item.get("scene_id", "unknown")
         object_id = item.get("object_id", "unknown")
         object_name = item.get("object_name", "unknown")
@@ -65,28 +76,41 @@ def evaluate_json_file(json_path, out_csv="results.csv", limit=None):
         # Get the prompt (first dialogue turn)
         dialogue = item.get("dialogue", [])
         if not dialogue:
-            print(f"\nWarning: No dialogue found for scene {scene_id}")
+            print(f"Warning: No dialogue found for scene {scene_id}")
             continue
         prompt = dialogue[0].get("text", "")
         
-        # Get ground truth from sample_type
-        sample_type = item.get("sample_type", "").lower()
-        if sample_type == "positive":
-            gt = True  # Should be detected as ambiguous
-            n_positive += 1
-        elif sample_type == "negative":
+        # Get ground truth from ambiguity_type
+        ambiguity_type = item.get("ambiguity_type", "").lower()
+        if ambiguity_type == "no_ambiguity":
             gt = False  # Should NOT be detected as ambiguous
             n_negative += 1
+        elif ambiguity_type and ambiguity_type != "":
+            gt = True  # Should be detected as ambiguous
+            n_positive += 1
         else:
-            print(f"\nWarning: Unknown sample_type '{sample_type}' for scene {scene_id}")
+            print(f"Warning: Missing or empty ambiguity_type for scene {scene_id}")
             continue
         
-        # Get scene (use raw environment info)
+        # Keep sample_type for CSV output
+        sample_type = item.get("sample_type", "")
+        
+        # Parse the scene
         env_info = (item.get("environment_info") or "").strip()
-        scene = {"environment_info": env_info}
+        
+        # Use structured parsing for better results
+        try:
+            scene_objects = parse_environment_info(env_info, filter_generic=True)
+            engine.set_scene(scene_objects)
+        except Exception as e:
+            if verbose:
+                print(f"Warning: Failed to parse scene {scene_id}: {e}")
+            # Fallback to raw environment info
+            scene_objects = {"environment_info": env_info}
+            engine.set_scene(scene_objects)
         
         # Run ambiguity detection
-        pred, raw = engine.is_prompt_ambiguous(prompt, scene=scene)
+        pred, raw = engine.is_prompt_ambiguous(prompt)
         
         # Update counters
         n_total += 1
@@ -105,6 +129,11 @@ def evaluate_json_file(json_path, out_csv="results.csv", limit=None):
                 n_positive_correct += 1
             else:
                 n_negative_correct += 1
+        
+        # Verbose output
+        if verbose:
+            status = "✅" if is_correct else "❌"
+            print(f"{status} Scene {scene_id}: pred={pred}, gt={gt} | {prompt[:50]}...")
         
         # Store result
         results.append({
@@ -162,8 +191,8 @@ def evaluate_json_file(json_path, out_csv="results.csv", limit=None):
     print("EVALUATION SUMMARY")
     print("=" * 70)
     print(f"\nTotal samples evaluated: {n_total}")
-    print(f"  - Positive samples (should be ambiguous): {n_positive}")
-    print(f"  - Negative samples (should NOT be ambiguous): {n_negative}")
+    print(f"  - Ambiguous samples (ambiguity_type != 'no_ambiguity'): {n_positive}")
+    print(f"  - Non-ambiguous samples (ambiguity_type == 'no_ambiguity'): {n_negative}")
     
     print(f"\nPredictions:")
     print(f"  - Predicted TRUE (ambiguous): {n_pred_true}")
@@ -172,8 +201,8 @@ def evaluate_json_file(json_path, out_csv="results.csv", limit=None):
     
     print(f"\nAccuracy:")
     print(f"  - Overall: {overall_acc:.1f}% ({n_correct}/{n_total})")
-    print(f"  - Positive samples: {positive_acc:.1f}% ({n_positive_correct}/{n_positive})")
-    print(f"  - Negative samples: {negative_acc:.1f}% ({n_negative_correct}/{n_negative})")
+    print(f"  - Ambiguous samples: {positive_acc:.1f}% ({n_positive_correct}/{n_positive})")
+    print(f"  - Non-ambiguous samples: {negative_acc:.1f}% ({n_negative_correct}/{n_negative})")
     
     print(f"\nMetrics for Ambiguous Detection:")
     print(f"  - Precision: {precision:.1f}%")
@@ -195,24 +224,64 @@ def evaluate_json_file(json_path, out_csv="results.csv", limit=None):
     }
 
 
+def main():
+    """Parse command line arguments and run evaluation."""
+    import argparse
+    
+    parser = argparse.ArgumentParser(
+        description="Evaluate AREngine ambiguity detection on a dataset"
+    )
+    parser.add_argument(
+        "json_path",
+        type=str,
+        help="Path to JSON dataset file"
+    )
+    parser.add_argument(
+        "output_csv",
+        type=str,
+        nargs="?",
+        default="results.csv",
+        help="Output CSV path (default: results.csv)"
+    )
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Limit number of samples to evaluate"
+    )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Print individual predictions"
+    )
+    
+    args = parser.parse_args()
+    
+    # Run evaluation
+    evaluate_json_file(
+        args.json_path,
+        out_csv=args.output_csv,
+        limit=args.limit,
+        verbose=args.verbose
+    )
+
+
 if __name__ == "__main__":
-    import sys
-    
-    if len(sys.argv) < 2:
-        print("Usage: python eval_dataset_simple.py <dataset.json> [output.csv] [limit]")
-        print("\nExample:")
-        print("  python eval_dataset_simple.py data.json results.csv 100")
-        sys.exit(1)
-    
-    in_path = sys.argv[1]
-    out_path = sys.argv[2] if len(sys.argv) > 2 else "results.csv"
-    
-    # Optional limit
-    limit = None
-    if len(sys.argv) > 3:
-        try:
-            limit = int(sys.argv[3])
-        except ValueError:
-            print(f"Warning: Could not parse limit '{sys.argv[3]}', evaluating all samples")
-    
-    evaluate_json_file(in_path, out_csv=out_path, limit=limit)
+    # Check if running with old-style arguments (backwards compatibility)
+    if len(sys.argv) >= 2 and not sys.argv[1].startswith("-"):
+        # Old style: python eval_dataset.py input.json output.csv
+        in_path = sys.argv[1]
+        out_path = sys.argv[2] if len(sys.argv) > 2 else "results.csv"
+        
+        # Check for --limit in old style
+        limit = None
+        if len(sys.argv) > 3:
+            try:
+                limit = int(sys.argv[3])
+            except ValueError:
+                pass
+        
+        evaluate_json_file(in_path, out_csv=out_path, limit=limit)
+    else:
+        # New style: use argparse
+        main()
