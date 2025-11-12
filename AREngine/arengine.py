@@ -65,17 +65,20 @@ class AREngine:
             "- User specifies an attribute (like color) that doesn't match any objects\n"
             "- Example: 'open the yellow closet' when the only closet is tan\n"
             "- Example: 'sit on the red chair' when there are only blue chairs\n"
+            "- IMPORTANT: If the user then specifies the correct attribute (e.g., 'the tan closet'), this is NO LONGER ambiguous\n"
             "- In these cases, we need to ask if they mean the actual object (with correct attributes)\n\n"
             "NOT AMBIGUOUS (false):\n"
             "- Exactly 1 object matches the description perfectly\n"
             "- Example: 'move the chair' when there is only 1 chair\n"
             "- Example: 'open the tan closet' when there is 1 tan closet\n"
-            "- Example: 'grab the gray trash can' when there is 1 gray trash can\n\n"
+            "- Example: 'grab the gray trash can' when there is 1 gray trash can\n"
+            "- Example: 'sit on the darkslategray chair' when there is 1 darkslategray chair\n\n"
             "CRITICAL RULES:\n"
             "- If user specifies a color/attribute that doesn't exist → return true (need to clarify)\n"
             "- If 2+ objects match the description → return true (need to clarify which one)\n"
             "- If exactly 1 object matches perfectly → return false (no clarification needed)\n"
-            "- If 0 objects match but similar objects exist → return true (attribute mismatch)\n\n"
+            "- If 0 objects match but similar objects exist → return true (attribute mismatch)\n"
+            "- IMPORTANT: After clarification, if the user's description now matches an exact attribute in the scene → return false\n\n"
             "Return ONLY one word:\n"
             "true  -> if multiple matches OR attribute mismatch (needs clarification)\n"
             "false -> if exactly 1 perfect match (no clarification needed)"
@@ -329,6 +332,10 @@ class AREngine:
             "Original: 'Delete the sphere because it's blocking the view' → Clarified: larger sphere\n"
             "→ Output: 'Delete the larger sphere because it's blocking the view'\n"
             "NOT: 'delete the larger sphere' ❌\n\n"
+            "Original: 'I want to take a break and sit on the black chair.' → Clarified: darkslategray chair\n"
+            "→ Output: 'I want to take a break and sit on the darkslategray chair.'\n"
+            "NOT: 'sit on the darkslategray chair' ❌\n"
+            "NOT: 'move the darkslategray chair' ❌\n\n"
             "Return ONLY the complete statement with full original context preserved."
         )
         
@@ -338,14 +345,8 @@ class AREngine:
         else:
             scene_str = json.dumps(self.scene, indent=2)
         
-        # Build conversation history
-        history_section = ""
-        if history:
-            history_section = "CONVERSATION SO FAR:\n"
-            for i, turn in enumerate(history, 1):
-                history_section += f"User: {turn['user']}\n"
-                history_section += f"Assistant: {turn['assistant']}\n"
-            history_section += "\n"
+        # FIX: Use only the ORIGINAL prompt from the first turn instead of full history
+        original_prompt = history[0]['user'] if history else "(no history)"
         
         messages = [
             {
@@ -354,7 +355,7 @@ class AREngine:
                     f"{guidance}\n\n"
                     "SCENE:\n"
                     f"{scene_str}\n\n"
-                    f"{history_section}"
+                    f"ORIGINAL REQUEST: {original_prompt}\n"
                     f"LATEST QUESTION: {clarifying_question}\n"
                     f"USER'S RESPONSE: {user_response}\n\n"
                     "Generate the contextualized statement:"
@@ -394,7 +395,7 @@ class AREngine:
         # Generate response
         generated_ids = self.model.generate(
             **model_inputs,
-            max_new_tokens=75,
+            # max_new_tokens=75,
         )
         
         # Decode only the new tokens (skip the prompt)
@@ -441,7 +442,7 @@ class AREngine:
         # Generate the clarifying question
         generated_ids = self.model.generate(
             **model_inputs,
-            max_new_tokens=75,
+            # max_new_tokens=75,
         )
         
         # Decode only the new tokens (skip the prompt)
@@ -476,16 +477,31 @@ class AREngine:
         
         return final_response, question
 
-    def resolve_prompt(self, prompt):
+    def resolve_prompt(self, prompt, max_iterations=5):
+        """
+        Resolve an ambiguous prompt through interactive clarification.
+        
+        Args:
+            prompt (str): The initial user prompt
+            max_iterations (int): Maximum number of clarification rounds (default: 5)
+            
+        Returns:
+            tuple: (final_prompt, history) where history contains all turns
+        """
         current_prompt = prompt
         history = []
-        while True:
+        iteration = 0
+        
+        while iteration < max_iterations:
+            iteration += 1
             is_ambig, raw = self.is_prompt_ambiguous(current_prompt)
+            
             # Print raw model output so you can "see the output"
-            print(current_prompt)
+            print(f"\n[Iteration {iteration}] {current_prompt}")
             print(f"[model raw]: {raw}")
 
             if is_ambig is not True:
+                print(f"[Resolution complete!]")
                 break
 
             # Single-turn clarification (interactive)
@@ -495,5 +511,8 @@ class AREngine:
                 'assistant': clarifying_question
             })
             current_prompt = next_prompt
+        
+        if iteration >= max_iterations:
+            print(f"\n[WARNING] Max iterations ({max_iterations}) reached. Using best effort.")
 
         return current_prompt, history
