@@ -78,7 +78,7 @@ fi
 echo "Running test evaluation on $LIMIT samples..."
 echo ""
 
-python eval_dataset_checkpoint.py \
+python ../AREngine/eval_dataset_checkpoint.py \
     $DATASET_PATH \
     $OUTPUT_CSV \
     --limit $LIMIT \

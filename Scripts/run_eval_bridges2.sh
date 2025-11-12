@@ -118,7 +118,7 @@ if [ ! -f "$DATASET_PATH" ]; then
 fi
 
 # Build command
-CMD="python eval_dataset_checkpoint.py $DATASET_PATH $OUTPUT_CSV"
+CMD="python ../AREngine/eval_dataset_checkpoint.py $DATASET_PATH $OUTPUT_CSV"
 CMD="$CMD --checkpoint-every $CHECKPOINT_EVERY"
 CMD="$CMD --log-file $LOG_FILE"
 
