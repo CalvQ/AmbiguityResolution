@@ -5,9 +5,10 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
-#SBATCH --gres=gpu:v100-16:1
+#SBATCH --gres=gpu:h100-80:1
 #SBATCH --partition=GPU-shared
-#SBATCH --time=1:00:00
+#SBATCH --time=4:00:00
+#SBATCH --account=cis220039p
 
 # ============================================================================
 # AREngine Quick Test Job for PSC Bridges2
@@ -25,9 +26,16 @@
 # CONFIGURATION
 # ============================================================================
 
-DATASET_PATH="data/your_dataset.json"
-OUTPUT_CSV="results/test_results.csv"
-LOG_FILE="logs/test_${SLURM_JOB_ID}.log"
+SRC="$HOME/.cache/huggingface/hub/models--Qwen--Qwen3-30B-A3B-Instruct-2507"
+DEST="$LOCAL/models/Qwen3-30B-A3B-Instruct-2507"
+mkdir -p "$DEST"
+
+rsync -a --info=progress2 "$SRC"/ "$DEST"/
+
+# Dataset and output paths
+DATASET_PATH="../AREngine/full.json"
+OUTPUT_CSV="output.csv"
+LOG_FILE="logs/eval_${SLURM_JOB_ID}.log"
 
 # Test parameters - small for quick validation
 LIMIT=10

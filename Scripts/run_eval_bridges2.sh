@@ -1,15 +1,16 @@
 #!/bin/bash
-#SBATCH --job-name=arengine_eval
-#SBATCH --output=logs/eval_%j.out
-#SBATCH --error=logs/eval_%j.err
+#SBATCH --job-name=arengine_test
+#SBATCH --output=logs/test_%j.out
+#SBATCH --error=logs/test_%j.err
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
-#SBATCH --gres=gpu:v100-32:1
+#SBATCH --gres=gpu:h100-80:1
 #SBATCH --partition=GPU-shared
-#SBATCH --time=12:00:00
+#SBATCH --time=4:00:00
+#SBATCH --account=cis220039p
 #SBATCH --mail-type=BEGIN,END,FAIL
-#SBATCH --mail-user=your_email@example.com
+#SBATCH --mail-user=calvinq@andrew.cmu.edu
 
 # ============================================================================
 # AREngine Evaluation Batch Job for PSC Bridges2
@@ -33,14 +34,20 @@
 # CONFIGURATION - EDIT THESE
 # ============================================================================
 
+SRC="$HOME/.cache/huggingface/hub/models--Qwen--Qwen3-30B-A3B-Instruct-2507"
+DEST="$LOCAL/models/Qwen3-30B-A3B-Instruct-2507"
+mkdir -p "$DEST"
+
+rsync -a --info=progress2 "$SRC"/ "$DEST"/
+
 # Dataset and output paths
-DATASET_PATH="data/your_dataset.json"
-OUTPUT_CSV="results/eval_results.csv"
+DATASET_PATH="../AREngine/full.json"
+OUTPUT_CSV="output.csv"
 LOG_FILE="logs/eval_${SLURM_JOB_ID}.log"
 
 # Evaluation parameters
 LIMIT=""  # Leave empty for full dataset, or set to number like "100"
-CHECKPOINT_EVERY=50  # Save checkpoint every N samples
+CHECKPOINT_EVERY=100  # Save checkpoint every N samples
 RESUME=""  # Set to "--resume" to resume from checkpoint
 
 # Python environment
