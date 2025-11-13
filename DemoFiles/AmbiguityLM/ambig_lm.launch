@@ -1,0 +1,7 @@
+<launch>
+  <arg name="scene_path" default="CMU-VLA-Challenge/system/unity/src/vehicle_simulator/mesh/unity/scene0000_00" />
+  
+  <node name="ambig_lm" pkg="ambig_lm" type="ambig_lm.py" output="screen">
+    <param name="scene_path" value="$(arg scene_path)" />
+  </node>
+</launch>
