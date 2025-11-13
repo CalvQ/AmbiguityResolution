@@ -22,5 +22,5 @@ python AREngine/human-response-agent.py \
 ```
 
 - ``--test-sample-limit``: Maximum number of samples to test
-- ``--round-limit`: Maximum number of dialogue rounds between robot and human
+- ``--round-limit``: Maximum number of dialogue rounds between robot and human
 - ``--output-file``: Path to the JSON file where results will be stored
