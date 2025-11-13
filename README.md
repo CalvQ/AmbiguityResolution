@@ -10,19 +10,17 @@ download ambiguity_data.json in ``data/ambiguity_data.json`` from https://drive.
 ## Usage of Human Response Agent
 Step1: Ensure there are ``ambiguity_data.json`` and ``ScanRefer_filtered.json`` under the data file.
 
-Step2: Edit the parameters at the begining of the ``AREngine/human-response-agent.py``:
+Step2: Before runing ``human-response-agent.py``, replace ``YOUR_OPENAI_API_KEY`` by the valid OpenAI key.
 
-- replace ``YOUR_OPENAI_API_KEY`` in the ``human-response-agent.py``
-
-- ``TEST_SAMPLE_LIMIT``: to control the maximum number of samples to test.
-
-- ``ROUND_LIMIT``: to control the maximum number of dialogue rounds.
-
-- ``output_file``: output file name of evaluation results.
-
-Step3: run 
+Step3: Run
 
 ```
-cd AREngine
-python human-response-agent.py
+python AREngine/human-response-agent.py \
+  --test-sample-limit 50 \
+  --round-limit 2 \
+  --output-file results/human-response-agent-output.json
 ```
+
+- ``--test-sample-limit``: Maximum number of samples to test
+- ``--round-limit`: Maximum number of dialogue rounds between robot and human
+- ``--output-file``: Path to the JSON file where results will be stored

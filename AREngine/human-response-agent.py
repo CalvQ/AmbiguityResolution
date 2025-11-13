@@ -1,3 +1,4 @@
+import argparse
 import openai
 import os
 import json
@@ -8,15 +9,14 @@ from Dataset.utils import get_scanrefer_environment_info
 from AREngine.arengine import AREngine
 
 
-############################# TO EDIT ##############################
-TEST_SAMPLE_LIMIT = 50 # maximum number of samples to test
-ROUND_LIMIT = 2 # maximum number of rounds of dialogue between robot and human
-output_file = "../results/human-response-agent-output.json"
+############################# DEFAULTS #############################
+DEFAULT_TEST_SAMPLE_LIMIT = 50  # maximum number of samples to test
+DEFAULT_ROUND_LIMIT = 2  # maximum number of rounds of dialogue between robot and human
+DEFAULT_OUTPUT_FILE = "../results/human-response-agent-output.json"
 os.environ['OPENAI_API_KEY'] = 'YOUR_OPENAI_API_KEY'
 ####################################################################
 
 
-os.makedirs(os.path.dirname(output_file), exist_ok=True)
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 client = openai.OpenAI(
     api_key=os.environ['OPENAI_API_KEY'],
@@ -113,7 +113,38 @@ class HumanAgent:
 
     
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Run the human response agent with configurable limits.")
+    parser.add_argument(
+        "--test-sample-limit",
+        type=int,
+        default=DEFAULT_TEST_SAMPLE_LIMIT,
+        help="Maximum number of samples to test (default: %(default)s). Use -1 for no limit."
+    )
+    parser.add_argument(
+        "--round-limit",
+        type=int,
+        default=DEFAULT_ROUND_LIMIT,
+        help="Maximum number of dialogue rounds between robot and human (default: %(default)s)."
+    )
+    parser.add_argument(
+        "--output-file",
+        type=str,
+        default=DEFAULT_OUTPUT_FILE,
+        help="Path to the JSON file where results will be stored (default: %(default)s)."
+    )
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
+    args = parse_args()
+    test_sample_limit = None if args.test_sample_limit is not None and args.test_sample_limit < 0 else args.test_sample_limit
+    round_limit = args.round_limit
+    output_file = args.output_file
+
+    output_dir = os.path.dirname(output_file) or "."
+    os.makedirs(output_dir, exist_ok=True)
+
     amb_dataset_path = '../data/ambiguity_data.json' 
     with open(amb_dataset_path, 'r', encoding='utf-8') as f:
         amb_dataset = json.load(f)
@@ -171,7 +202,7 @@ if __name__ == '__main__':
                 # successfully resolved the ambiguity
                 RESOLVED_FLAG = True
                 break
-            if count == ROUND_LIMIT:
+            if round_limit is not None and round_limit >= 0 and count == round_limit:
                 break
 
         results.append({
@@ -181,11 +212,11 @@ if __name__ == '__main__':
             'ambiguity_type': q['ambiguity_type'],
             'initial_query': q['dialogue'][0]['text'],
             'rounds_executed': count,
-            'resolved_within_round_limit': RESOLVED_FLAG and count <= ROUND_LIMIT,
+            'resolved_within_round_limit': RESOLVED_FLAG and (round_limit is None or round_limit < 0 or count <= round_limit),
             'dialogue_rounds': dialogue_rounds
         })
 
-        if TEST_SAMPLE_LIMIT is not None and TEST_COUNT > TEST_SAMPLE_LIMIT:
+        if test_sample_limit is not None and TEST_COUNT > test_sample_limit:
             break
 
     with open(output_file, 'w', encoding='utf-8') as f_out:
