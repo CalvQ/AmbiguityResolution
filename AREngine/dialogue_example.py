@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 from arengine import AREngine
+from scene_parser import parse_environment_info, scene_to_compact_string
 
 def test_single_scene(json_path, scene_index=0):
     """
@@ -22,7 +23,11 @@ def test_single_scene(json_path, scene_index=0):
     item = data[scene_index]
     
     # Extract scene information
-    scene = {"environment_info": (item.get("environment_info") or "").strip()}
+    env_info = (item.get("environment_info") or "").strip()
+    
+    # Parse scene into structured objects and filter out generic "Object" entries
+    scene_objects = parse_environment_info(env_info, filter_generic=True)
+    
     initial_prompt = item.get("dialogue", [])[0]["text"]
     
     # Display scene information
@@ -32,7 +37,8 @@ def test_single_scene(json_path, scene_index=0):
     print(f"Scene ID: {item.get('scene_id')}")
     print(f"Object ID: {item.get('object_id')}")
     print(f"Object Name: {item.get('object_name')}")
-    print(f"\nScene Description:\n{scene['environment_info']}")
+    print(f"\nTotal objects in scene: {len(scene_objects)}")
+    print(f"\nScene (compact format):\n{scene_to_compact_string(scene_objects)}")
     print(f"\nInitial Prompt: '{initial_prompt}'")
     print("=" * 70)
     print()
@@ -41,7 +47,7 @@ def test_single_scene(json_path, scene_index=0):
     print("Loading model...")
     engine = AREngine()
     engine.load_model()
-    engine.set_scene(scene)
+    engine.set_scene(scene_objects)  # Pass the structured objects list
     print("Model loaded!\n")
     
     # Run the interactive resolution process
@@ -110,16 +116,16 @@ if __name__ == "__main__":
     default_dataset = "ambiguity_dataset_demo_10.json"
     
     # Parse command line arguments
-    # if len(sys.argv) == 1:
-    #     # No arguments - show usage
-    #     print("Usage:")
-    #     print(f"  python test_single_scene.py <dataset.json> <scene_index>")
-    #     print(f"  python test_single_scene.py <dataset.json> list")
-    #     print()
-    #     print("Examples:")
-    #     print(f"  python test_single_scene.py {default_dataset} 0")
-    #     print(f"  python test_single_scene.py {default_dataset} list")
-    #     sys.exit(0)
+    if len(sys.argv) == 1:
+        # No arguments - show usage
+        print("Usage:")
+        print(f"  python test_single_scene.py <dataset.json> <scene_index>")
+        print(f"  python test_single_scene.py <dataset.json> list")
+        print()
+        print("Examples:")
+        print(f"  python test_single_scene.py {default_dataset} 0")
+        print(f"  python test_single_scene.py {default_dataset} list")
+        sys.exit(0)
     
     json_path = sys.argv[1] if len(sys.argv) > 1 else default_dataset
     
