@@ -7,16 +7,23 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Dataset.utils import get_scanrefer_environment_info
 from AREngine.arengine import AREngine
 
-os.environ['OPENAI_API_KEY'] = 'YOUR_OPENAI_API_KEY'
-import os
 
+############################# TO EDIT ##############################
+TEST_SAMPLE_LIMIT = 50 # maximum number of samples to test
+ROUND_LIMIT = 2 # maximum number of rounds of dialogue between robot and human
+output_file = "../results/human-response-agent-output.json"
+os.environ['OPENAI_API_KEY'] = 'YOUR_OPENAI_API_KEY'
+####################################################################
+
+
+os.makedirs(os.path.dirname(output_file), exist_ok=True)
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 client = openai.OpenAI(
     api_key=os.environ['OPENAI_API_KEY'],
     base_url="https://ai-gateway.andrew.cmu.edu/"
 )
 
-scanrefer_data_path = "../../scanrefer/ScanRefer_filtered_train.json"
+scanrefer_data_path = "../data/ScanRefer_train.json"
 with open(scanrefer_data_path, 'r', encoding='utf-8') as f:
     scanrefer_data = json.load(f)
 
@@ -107,15 +114,17 @@ class HumanAgent:
     
 
 if __name__ == '__main__':
-    amb_dataset_path = '../../ambiguity_dataset/human-response-demo/demo.json' 
+    amb_dataset_path = '../data/ambiguity_data.json' 
     with open(amb_dataset_path, 'r', encoding='utf-8') as f:
         amb_dataset = json.load(f)
     
     engine = AREngine()
     engine.load_model()
     
-    TEST_SAMPLE = 50
     TEST_COUNT = 0
+    
+    results = []
+
     for q in amb_dataset:
         TEST_COUNT += 1
         try:
@@ -138,6 +147,7 @@ if __name__ == '__main__':
         RESOLVED_FLAG = False
         robot_history = []
         current_prompt = q['dialogue'][0]['text']
+        dialogue_rounds = []
 
         count = 0
         while True:
@@ -149,14 +159,34 @@ if __name__ == '__main__':
                     'assistant': robot_response
                 })
                 human_response = ha.get_human_response(robot_response)
+                dialogue_rounds.append({
+                    'robot': robot_response,
+                    'human': human_response
+                })
                 current_prompt = human_response
                 print('-'*20, 'Round', count, '-'*20)
                 print('\n[Robot Clarification]: ', robot_response)
                 print('\n[Human Response]: ', human_response)
             else:
+                # successfully resolved the ambiguity
+                RESOLVED_FLAG = True
                 break
-            if count > 1:
+            if count == ROUND_LIMIT:
                 break
 
-        if TEST_COUNT >= TEST_SAMPLE:
+        results.append({
+            'scene_id': q['scene_id'],
+            'object_id': q['object_id'],
+            'object_name': q['object_name'],
+            'ambiguity_type': q['ambiguity_type'],
+            'initial_query': q['dialogue'][0]['text'],
+            'rounds_executed': count,
+            'resolved_within_round_limit': RESOLVED_FLAG and count <= ROUND_LIMIT,
+            'dialogue_rounds': dialogue_rounds
+        })
+
+        if TEST_SAMPLE_LIMIT is not None and TEST_COUNT > TEST_SAMPLE_LIMIT:
             break
+
+    with open(output_file, 'w', encoding='utf-8') as f_out:
+        json.dump(results, f_out, ensure_ascii=False, indent=2)
