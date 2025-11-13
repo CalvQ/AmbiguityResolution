@@ -319,7 +319,14 @@ Generate ONE natural question for the given object. Only output the question, no
         USER_PROMPT = f"Object: {object_name}\nGenerate a natural human question for this object."
     
     answer = get_response(USER_PROMPT, system_prompt=SYSTEM_PROMPT)
-    question = answer.strip().strip('"').strip("'")
+    try:
+        question = answer.strip().strip('"').strip("'")
+    except:
+        try:
+            answer = get_response(USER_PROMPT, system_prompt=SYSTEM_PROMPT)
+            question = answer.strip().strip('"').strip("'")
+        except:
+            question = ""
     return question
 
 def _validate_natural_question(object_name: str, color: str, generated_question: str) -> str:
