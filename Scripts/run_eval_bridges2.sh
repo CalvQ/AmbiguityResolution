@@ -48,7 +48,7 @@ LOG_FILE="logs/eval_${SLURM_JOB_ID}.log"
 # Evaluation parameters
 LIMIT=""  # Leave empty for full dataset, or set to number like "100"
 CHECKPOINT_EVERY=100  # Save checkpoint every N samples
-RESUME=""  # Set to "--resume" to resume from checkpoint
+RESUME="--resume"  # Set to "--resume" to resume from checkpoint
 
 # Python environment
 CONDA_ENV="vln"  # Your conda environment name
