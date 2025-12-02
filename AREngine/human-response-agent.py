@@ -225,15 +225,16 @@ if __name__ == '__main__':
                 print('\n[Human Response]: ', human_response)
             else:
                 # successfully resolved the ambiguity
-                if len(robot_history) == 0:
-                    pred_ambiguity = 'no_ambiguity'
-                else:
-                    pred_ambiguity = 'ambiguity'
                 RESOLVED_FLAG = True
                 break
             if round_limit is not None and round_limit >= 0 and count == round_limit:
-                pred_ambiguity = 'not_resolved'
                 break
+            
+        if len(robot_history) == 0:
+            pred_ambiguity = 'no_ambiguity'
+        else:
+            pred_ambiguity = 'ambiguity'
+
 
         result = {
             'scene_id': q['scene_id'],
