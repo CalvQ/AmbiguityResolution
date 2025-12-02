@@ -23,7 +23,7 @@ client = openai.OpenAI(
     base_url="https://ai-gateway.andrew.cmu.edu/"
 )
 
-scanrefer_data_path = "../data/ScanRefer_train.json"
+scanrefer_data_path = "../data/ScanRefer_filtered.json"
 with open(scanrefer_data_path, 'r', encoding='utf-8') as f:
     scanrefer_data = json.load(f)
 
@@ -133,30 +133,54 @@ def parse_args():
         default=DEFAULT_OUTPUT_FILE,
         help="Path to the JSON file where results will be stored (default: %(default)s)."
     )
+    parser.add_argument(
+        "--start-index",
+        type=int,
+        default=None,
+        help="Start index of samples to process (0-based, inclusive). If not specified, starts from 0."
+    )
+    parser.add_argument(
+        "--end-index",
+        type=int,
+        default=None,
+        help="End index of samples to process (0-based, exclusive). If not specified, processes until the end."
+    )
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     args = parse_args()
-    test_sample_limit = None if args.test_sample_limit is not None and args.test_sample_limit < 0 else args.test_sample_limit
+    test_sample_limit = args.test_sample_limit
     round_limit = args.round_limit
     output_file = args.output_file
+    start_index = args.start_index if args.start_index is not None else 0
+    end_index = args.end_index if args.end_index is not None else None
 
     output_dir = os.path.dirname(output_file) or "."
     os.makedirs(output_dir, exist_ok=True)
 
-    amb_dataset_path = '../data/ambiguity_data.json' 
+    amb_dataset_path = '/content/drive/MyDrive/AmbiguityResolution/AREngine/ambiguous_data.json' 
     with open(amb_dataset_path, 'r', encoding='utf-8') as f:
         amb_dataset = json.load(f)
+    
+    dataset_size = len(amb_dataset)
+    actual_start = max(0, start_index)
+    actual_end = min(dataset_size, end_index) if end_index is not None else dataset_size
+    
+    print(f"Indices Range: [{actual_start}, {actual_end}), total: {actual_end - actual_start} samples")
     
     engine = AREngine()
     engine.load_model()
     
     TEST_COUNT = 0
     
-    results = []
 
-    for q in amb_dataset:
+    for idx, q in enumerate(amb_dataset):
+        if idx < actual_start:
+            continue
+        if end_index is not None and idx >= actual_end:
+            break
+
         TEST_COUNT += 1
         try:
             color_prompt = None
@@ -183,11 +207,12 @@ if __name__ == '__main__':
         count = 0
         while True:
             robot_response = engine.detect_and_ask(current_prompt,robot_history)
+            print('\n[Detect and Ask]: ', robot_response )
             if robot_response != 'Non-Ambiguous':
                 count += 1
                 robot_history.append({
                     'user': current_prompt,
-                    'assistant': robot_response
+                    'assistant': robot_response # robot_response = clarifying_question
                 })
                 human_response = ha.get_human_response(robot_response)
                 dialogue_rounds.append({
@@ -205,7 +230,7 @@ if __name__ == '__main__':
             if round_limit is not None and round_limit >= 0 and count == round_limit:
                 break
 
-        results.append({
+        result = {
             'scene_id': q['scene_id'],
             'object_id': q['object_id'],
             'object_name': q['object_name'],
@@ -214,10 +239,11 @@ if __name__ == '__main__':
             'rounds_executed': count,
             'resolved_within_round_limit': RESOLVED_FLAG and (round_limit is None or round_limit < 0 or count <= round_limit),
             'dialogue_rounds': dialogue_rounds
-        })
+        }
+
+        with open(output_file, "a", encoding="utf-8") as f_out:
+          f_out.write(json.dumps(result, ensure_ascii=False))
+          f_out.write("\n")
 
         if test_sample_limit is not None and TEST_COUNT > test_sample_limit:
             break
-
-    with open(output_file, 'w', encoding='utf-8') as f_out:
-        json.dump(results, f_out, ensure_ascii=False, indent=2)

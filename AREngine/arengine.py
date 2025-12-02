@@ -2,6 +2,9 @@ import load_llm
 import random
 import json
 import re
+from vllm import LLM, SamplingParams
+from transformers import AutoTokenizer
+
 
 class AREngine:
     def __init__(self):
@@ -9,9 +12,25 @@ class AREngine:
         self.tokenizer = None
         self.scene = None
         
+
     def load_model(self):
-        self.model, self.tokenizer = load_llm.load_qwen3_30b()
-        
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            "Qwen/Qwen3-8B" #"Qwen/Qwen3-30B-Instruct-AWQ"  # 用量化版，Colab 40GB 才能跑
+        )
+
+        self.sampling_params = SamplingParams(
+            temperature=0.1,
+            top_p=0.95,
+            max_tokens=256
+        )
+
+        self.model = LLM(
+            model="Qwen/Qwen3-8B",
+            tensor_parallel_size=1
+        )
+
+        print("[vLLM] Qwen3 loaded")
+
     def set_scene(self, scene):
         """
         Set the scene for ambiguity detection.
@@ -166,18 +185,12 @@ class AREngine:
     def is_prompt_ambiguous(self, prompt, scene = None):
         prompt_str = self._build_prompt(prompt, scene)
         
-        # Tokenize the prompt
-        model_inputs = self.tokenizer([prompt_str], return_tensors="pt").to(self.model.device)
-        
-        # Generate response
-        generated_ids = self.model.generate(
-            **model_inputs,
-            max_new_tokens=8,
+        # vLLM generate
+        outputs = self.model.generate(
+            [prompt_str],
+            self.sampling_params
         )
-        
-        # Decode only the new tokens (skip the prompt)
-        output_ids = generated_ids[0][len(model_inputs.input_ids[0]):].tolist()
-        text = self.tokenizer.decode(output_ids, skip_special_tokens=True)
+        text = outputs[0].outputs[0].text.strip().lower()
         
         first = re.sub(r"[\\s\\W]+$", "", str(text).strip().lower())  # strip punctuation
         if first.startswith("true"):
@@ -389,18 +402,11 @@ class AREngine:
             user_response, history, clarifying_question
         )
         
-        # Tokenize the prompt
-        model_inputs = self.tokenizer([context_prompt], return_tensors="pt").to(self.model.device)
-        
-        # Generate response
-        generated_ids = self.model.generate(
-            **model_inputs,
-            # max_new_tokens=75,
+        outputs = self.model.generate(
+            [context_prompt],
+            self.sampling_params
         )
-        
-        # Decode only the new tokens (skip the prompt)
-        output_ids = generated_ids[0][len(model_inputs.input_ids[0]):].tolist()
-        contextualized = self.tokenizer.decode(output_ids, skip_special_tokens=True)
+        contextualized = outputs[0].outputs[0].text.strip()
         
         # Clean up the response
         contextualized = contextualized.strip()
@@ -422,7 +428,7 @@ class AREngine:
         
         return contextualized
         
-    def generate_clarification(self, prompt, history):
+    def _generate_clarification(self, prompt, history):
         """
         Generate a clarifying question using the LLM based on the ambiguous prompt.
         
@@ -436,18 +442,11 @@ class AREngine:
         # Build the clarification prompt
         clarification_prompt = self._build_clarification_prompt(prompt, history)
         
-        # Tokenize the prompt
-        model_inputs = self.tokenizer([clarification_prompt], return_tensors="pt").to(self.model.device)
-        
-        # Generate the clarifying question
-        generated_ids = self.model.generate(
-            **model_inputs,
-            # max_new_tokens=75,
-        )
-        
-        # Decode only the new tokens (skip the prompt)
-        output_ids = generated_ids[0][len(model_inputs.input_ids[0]):].tolist()
-        question = self.tokenizer.decode(output_ids, skip_special_tokens=True)
+        outputs = self.model.generate(
+                    [clarification_prompt],
+                    self.sampling_params
+                )
+        question = outputs[0].outputs[0].text.strip()
         
         # Clean up the generated question
         question = question.strip()
@@ -515,14 +514,13 @@ class AREngine:
         # if no ambiguous: 'Non-Ambiguous'
         # if ambiguous: clarifying_question
     def detect_and_ask(self,prompt,history):
-        if len(history) == 0:
-            is_ambig, raw = self.is_prompt_ambiguous(prompt)
-            if is_ambig is not True:
-                return 'Non-Ambiguous'
-        else:
+        if len(history) != 0:
             prompt = self.contextualize_user_response(
                 prompt, history, history[-1]['assistant']
-            )
-        clarifying_question = self._generate_clarification(prompt, history)
+            ) # generate new query using contextualization version of query
+        is_ambig, raw = self.is_prompt_ambiguous(prompt)
+        if is_ambig is not True:
+            return 'Non-Ambiguous'
+        clarifying_question = self._generate_clarification(prompt, history) # ask clarification questions
         return clarifying_question
     
