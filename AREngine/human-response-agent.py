@@ -159,7 +159,7 @@ if __name__ == '__main__':
     output_dir = os.path.dirname(output_file) or "."
     os.makedirs(output_dir, exist_ok=True)
 
-    amb_dataset_path = '/content/drive/MyDrive/AmbiguityResolution/AREngine/ambiguous_data.json' 
+    amb_dataset_path = '../data/ambiguous_data.json' 
     with open(amb_dataset_path, 'r', encoding='utf-8') as f:
         amb_dataset = json.load(f)
     
@@ -225,19 +225,26 @@ if __name__ == '__main__':
                 print('\n[Human Response]: ', human_response)
             else:
                 # successfully resolved the ambiguity
+                if len(robot_history) == 0:
+                    pred_ambiguity = 'no_ambiguity'
+                else:
+                    pred_ambiguity = 'ambiguity'
                 RESOLVED_FLAG = True
                 break
             if round_limit is not None and round_limit >= 0 and count == round_limit:
+                pred_ambiguity = 'not_resolved'
                 break
 
         result = {
             'scene_id': q['scene_id'],
             'object_id': q['object_id'],
             'object_name': q['object_name'],
-            'ambiguity_type': q['ambiguity_type'],
+            'gt_ambiguity_type': q['ambiguity_type'],
+            'pred_ambiguity': pred_ambiguity,
+            'correct_detection': pred_ambiguity == q['ambiguity_type'],
             'initial_query': q['dialogue'][0]['text'],
             'rounds_executed': count,
-            'resolved_within_round_limit': RESOLVED_FLAG and (round_limit is None or round_limit < 0 or count <= round_limit),
+            'resolved_within_round_limit': RESOLVED_FLAG and (count <= round_limit),
             'dialogue_rounds': dialogue_rounds
         }
 
